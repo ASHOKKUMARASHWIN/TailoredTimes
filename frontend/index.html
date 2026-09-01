@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailoredTimes — News, Tailored for You</title>
+    <link rel="icon" type="image/png" href="/assets/logo-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- STARTUP SPLASH SCREEN -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo-container">
+                <img src="/assets/logo-icon.png" alt="TailoredTimes Logo" class="splash-logo">
+                <div class="splash-pulse-ring"></div>
+            </div>
+            <h1 class="splash-title">TailoredTimes</h1>
+            <p class="splash-tagline">Curating your world, headline by headline</p>
+            <div class="splash-loader-bar">
+                <div class="splash-loader-progress"></div>
+            </div>
+            <div class="splash-status" id="splash-status">Initializing your personalized newsroom...</div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <div id="modal-overlay" class="hidden">
+        <div id="modal-content"></div>
+    </div>
+
+    <!-- AUTH VIEW -->
+    <div id="auth-view" class="view hidden">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="/assets/logo-transparent.png" alt="TailoredTimes — News, Tailored for You" class="brand-logo-img auth-logo">
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">LOGIN</button>
+                <button class="auth-tab" data-tab="signup">SIGN UP</button>
+            </div>
+
+            <div class="auth-forms">
+                <form id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    <div class="auth-divider"><span>or</span></div>
+                    <button type="button" id="btn-guest" class="btn btn-outline btn-block">Continue as Guest</button>
+                    <a href="#" id="link-admin-login" class="link-muted">Developer Login</a>
+                </form>
+
+                <form id="signup-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="Min 8 characters">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm">Confirm Password</label>
+                        <input type="password" id="signup-confirm" required placeholder="Confirm password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ONBOARDING VIEW -->
+    <div id="onboarding-view" class="view hidden">
+        <div class="onboarding-container">
+            <div class="onboarding-brand">
+                <img src="/assets/logo-icon.png" alt="TailoredTimes Logo" class="brand-logo-img onboarding-logo">
+            </div>
+            <div class="progress-container">
+                <span id="onboarding-step-text">Step 1 of 8</span>
+                <div class="progress-bar-bg">
+                    <div id="onboarding-progress" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="onboarding-content">
+                <!-- Step 1: Countries -->
+                <div class="onboarding-step active" id="step-1">
+                    <h2>Which countries do you want news from?</h2>
+                    <div class="step-controls">
+                        <input type="text" id="country-search" class="search-input" placeholder="Search countries...">
+                        <div class="control-actions">
+                            <button class="btn btn-text" id="btn-select-all-countries">Select All</button>
+                            <button class="btn btn-text" id="btn-clear-all-countries">Clear All</button>
+                        </div>
+                        <p id="country-counter">Selected: 0 countries</p>
+                    </div>
+                    <div id="country-grid" class="country-grid"></div>
+                </div>
+
+                <!-- Step 2: Interests -->
+                <div class="onboarding-step" id="step-2">
+                    <h2>What topics interest you?</h2>
+                    <div id="interest-grid" class="pill-grid"></div>
+                </div>
+
+                <!-- Step 3: Profession -->
+                <div class="onboarding-step" id="step-3">
+                    <h2>What best describes you?</h2>
+                    <div id="profession-grid" class="card-grid"></div>
+                </div>
+
+                <!-- Step 4: News Format -->
+                <div class="onboarding-step" id="step-4">
+                    <h2>How do you prefer your news?</h2>
+                    <div id="format-grid" class="card-grid"></div>
+                </div>
+
+                <!-- Step 5: Viewpoint -->
+                <div class="onboarding-step" id="step-5">
+                    <h2>Perspective preference</h2>
+                    <div id="viewpoint-grid" class="card-grid"></div>
+                </div>
+
+                <!-- Step 6: Reading Time -->
+                <div class="onboarding-step" id="step-6">
+                    <h2>How much time do you have to read news?</h2>
+                    <div id="reading-time-grid" class="card-grid"></div>
+                </div>
+
+                <!-- Step 7: Create Feed -->
+                <div class="onboarding-step" id="step-7">
+                    <h2>You're all set!</h2>
+                    <div id="onboarding-summary" class="summary-box"></div>
+                    <button id="btn-create-feed" class="btn btn-primary btn-large btn-animated">
+                        CREATE MY FEED &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <div class="onboarding-footer">
+                <button id="btn-prev-step" class="btn btn-outline hidden">Back</button>
+                <button id="btn-next-step" class="btn btn-primary">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN VIEW -->
+    <div id="admin-login-view" class="view hidden dark-theme-override">
+        <div class="auth-card admin-auth-card">
+            <div class="auth-header">
+                <img src="/assets/logo-icon.png" alt="TailoredTimes Logo" class="brand-logo-img admin-logo">
+                <h2>Developer Access</h2>
+            </div>
+            <form id="admin-login-form" class="auth-form active">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="admin-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Access Dashboard</button>
+                <button type="button" id="btn-back-to-app" class="btn btn-text btn-block mt-2">Back to App</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD VIEW -->
+    <div id="admin-view" class="view hidden dark-theme-override">
+        <div class="admin-layout">
+            <aside class="admin-sidebar">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
+                    <img src="/assets/logo-icon.png" alt="TailoredTimes Logo" class="brand-logo-img" style="width: 32px; height: 32px;">
+                    <h2 style="margin-bottom: 0;">TT Admin</h2>
+                </div>
+                <nav>
+                    <a href="#" class="active" data-admin-tab="dashboard">Dashboard</a>
+                    <a href="#" data-admin-tab="users">Users</a>
+                    <a href="#" data-admin-tab="sources">Sources</a>
+                </nav>
+                <button id="btn-admin-logout" class="btn btn-outline">Logout</button>
+            </aside>
+            <main class="admin-main">
+                <div id="admin-dashboard-tab" class="admin-tab active">
+                    <h1>Dashboard Overview</h1>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Users</h3>
+                            <div class="val" id="stat-total-users">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Active Today</h3>
+                            <div class="val" id="stat-active-today">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Guest Users</h3>
+                            <div class="val" id="stat-guest-users">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Articles Cached</h3>
+                            <div class="val" id="stat-cached-articles">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="admin-users-tab" class="admin-tab">
+                    <h1>Users Management</h1>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Countries</th>
+                                    <th>Profession</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="admin-sources-tab" class="admin-tab">
+                    <h1>Sources</h1>
+                    <div id="admin-sources-list"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MAIN APP VIEW -->
+    <div id="app-view" class="view hidden">
+        <header class="app-header">
+            <div class="header-left">
+                <button id="btn-sidebar-toggle" class="icon-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="app-logo">
+                    <img src="/assets/logo-icon.png" alt="TailoredTimes Logo" class="brand-logo-img nav-logo">
+                    <span>TailoredTimes</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="app-search" placeholder="Search news...">
+                    <button id="btn-clear-search" class="hidden"><i class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="btn-theme-toggle" class="icon-btn"><i class="fa-solid fa-moon"></i></button>
+                <div class="user-profile-menu">
+                    <div id="header-avatar" class="avatar">U</div>
+                    <span id="header-username" class="hide-mobile">User</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <!-- Sidebar -->
+            <div class="sidebar-overlay" id="sidebar-overlay"></div>
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-brand">
+                    <img src="/assets/logo-icon.png" alt="TailoredTimes Logo" class="brand-logo-img sidebar-logo">
+                    <span>TailoredTimes</span>
+                </div>
+                <div class="sidebar-header">
+                    <div class="sidebar-user">
+                        <div id="sidebar-avatar" class="avatar lg">U</div>
+                        <div class="user-info">
+                            <h3 id="sidebar-name">User Name</h3>
+                            <p id="sidebar-profession">Profession</p>
+                        </div>
+                    </div>
+                    <button id="btn-sidebar-close" class="icon-btn hide-desktop"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" data-nav="home"><i class="fa-solid fa-house"></i> Home</a>
+                    <a href="#" class="nav-item" data-nav="for-you"><i class="fa-regular fa-newspaper"></i> My News</a>
+                    <a href="#" class="nav-item" data-nav="my-countries"><i class="fa-solid fa-globe"></i> My Countries</a>
+                    <a href="#" class="nav-item" data-nav="tech"><i class="fa-solid fa-laptop-code"></i> Technology</a>
+                    <a href="#" class="nav-item" data-nav="business"><i class="fa-solid fa-chart-line"></i> Business</a>
+                    <a href="#" class="nav-item" data-nav="science"><i class="fa-solid fa-flask"></i> Science</a>
+                    <a href="#" class="nav-item" data-nav="sports"><i class="fa-solid fa-trophy"></i> Sports</a>
+                    <a href="#" class="nav-item" data-nav="education"><i class="fa-solid fa-graduation-cap"></i> Education</a>
+                    
+                    <div class="nav-section">LEARNING & EXAM ARCHIVE</div>
+                    <a href="#" class="nav-item archive-link" data-nav="archive-ca"><i class="fa-solid fa-calculator"></i> CA Students</a>
+                    <a href="#" class="nav-item archive-link" data-nav="archive-students"><i class="fa-solid fa-graduation-cap"></i> General Students</a>
+                    <a href="#" class="nav-item archive-link" data-nav="archive-ielts"><i class="fa-solid fa-earth-europe"></i> IELTS Prep</a>
+                    <a href="#" class="nav-item archive-link" data-nav="archive-toefl"><i class="fa-solid fa-earth-americas"></i> TOEFL Prep</a>
+
+                    <div class="nav-section">ACCOUNT</div>
+                    <a href="#" class="nav-item" data-nav="saved"><i class="fa-solid fa-bookmark"></i> Saved Articles</a>
+                    <a href="#" class="nav-item" data-nav="settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                    <a href="#" class="nav-item" id="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Live Bar -->
+                <div class="live-indicator-bar" id="live-bar">
+                    <div class="live-status">
+                        <span class="pulse-dot"></span> LIVE &bull; <span id="live-count">0</span> stories loaded &bull; Updated <span id="live-time">--:--</span>
+                    </div>
+                    <button id="btn-refresh-feed" class="btn btn-text btn-sm"><i class="fa-solid fa-rotate-right"></i> REFRESH</button>
+                </div>
+
+                <!-- News Tabs Bar -->
+                <div class="news-tabs-container" id="news-tabs">
+                    <button class="news-tab active" data-tab="for-you">FOR YOU</button>
+                    <button class="news-tab" data-tab="world">WORLD</button>
+                    <button class="news-tab" data-tab="my-countries">MY COUNTRIES</button>
+                    <button class="news-tab" data-tab="tech">TECH</button>
+                    <button class="news-tab" data-tab="business">BUSINESS</button>
+                    <button class="news-tab" data-tab="science">SCIENCE</button>
+                    <button class="news-tab" data-tab="sports">SPORTS</button>
+                    <button class="news-tab" data-tab="entertainment">ENTERTAINMENT</button>
+                    <button class="news-tab" data-tab="education">EDUCATION</button>
+                    <button class="news-tab ca-pill-tab" data-tab="archive-ca"><i class="fa-solid fa-graduation-cap"></i> CA STUDENTS (50)</button>
+                    <button class="news-tab" data-tab="saved">SAVED</button>
+                </div>
+
+                <!-- Feed View -->
+                <div id="feed-view" class="content-section active">
+                    <!-- CA High-Yield Articles Quick Banner -->
+                    <div class="ca-feature-banner" onclick="handleSidebarNav('archive-ca')" style="cursor: pointer; background: linear-gradient(135deg, rgba(0, 102, 255, 0.12), rgba(114, 9, 183, 0.12)); border: 1px solid rgba(0, 102, 255, 0.25); border-radius: var(--radius); padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 2px;">
+                                    Chartered Accountancy — 50 High-Yield Study Articles (2026 Edition)
+                                </h4>
+                                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
+                                    Auditing & Assurance &bull; Taxation &bull; Corporate Law &bull; Ind AS Standards &bull; SFM &bull; Exam Prep
+                                </p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" style="pointer-events: none;">
+                            Explore 50 Articles &rarr;
+                        </button>
+                    </div>
+
+                    <!-- In-Feed Instant Country & Keyword Filter Bar -->
+                    <div class="feed-filter-bar" id="feed-filter-bar">
+                        <div class="filter-header-row">
+                            <div class="filter-search-box">
+                                <i class="fa-solid fa-filter"></i>
+                                <input type="text" id="feed-inline-search" placeholder="Filter current news by title, country or keyword...">
+                                <button id="btn-clear-feed-filter" class="btn-clear-filter hidden" title="Clear filter"><i class="fa-solid fa-times"></i></button>
+                            </div>
+                            <div class="freshness-badge"><i class="fa-regular fa-clock"></i> Past 24 Hours</div>
+                        </div>
+                        <div class="country-filter-pills" id="feed-country-pills">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="news-grid" id="news-grid">
+                        <!-- Cards injected by JS -->
+                    </div>
+                    <div class="load-more-container">
+                        <button id="btn-load-more" class="btn btn-outline hidden">Load More</button>
+                        <div id="feed-loader" class="loader hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Archive View -->
+                <div id="archive-view" class="content-section">
+                    <div class="archive-header">
+                        <h1 id="archive-title">Exam Archive</h1>
+                        <div class="archive-filters">
+                            <div class="topic-pills" id="archive-topics"></div>
+                            <div class="year-buttons" id="archive-years"></div>
+                        </div>
+                    </div>
+                    <div class="archive-list" id="archive-list">
+                        <!-- List items injected by JS -->
+                    </div>
+                    <div class="pagination" id="archive-pagination"></div>
+                </div>
+
+                <!-- Settings View -->
+                <div id="settings-view" class="content-section">
+                    <div class="settings-header">
+                        <div>
+                            <h1>Settings & Preferences</h1>
+                            <p class="section-subtitle">Customize your personalized news feed, countries, topics, and account preferences.</p>
+                        </div>
+                        <button id="btn-save-settings" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                    </div>
+
+                    <div class="settings-layout">
+                        <!-- Settings Nav Tabs -->
+                        <div class="settings-nav">
+                            <button class="settings-tab-btn active" data-settings-tab="profile"><i class="fa-regular fa-user"></i> Profile & Account</button>
+                            <button class="settings-tab-btn" data-settings-tab="countries"><i class="fa-solid fa-globe"></i> Countries (<span id="settings-country-count">0</span>)</button>
+                            <button class="settings-tab-btn" data-settings-tab="topics"><i class="fa-solid fa-shapes"></i> Topics & Interests</button>
+                            <button class="settings-tab-btn" data-settings-tab="reading"><i class="fa-solid fa-sliders"></i> Reading Preferences</button>
+                        </div>
+
+                        <!-- Settings Content Panes -->
+                        <div class="settings-content">
+                            <!-- 1. Profile Tab -->
+                            <div id="settings-pane-profile" class="settings-pane active">
+                                <div class="settings-card">
+                                    <h3>Account Information</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Display Name</label>
+                                            <input type="text" id="settings-name" class="form-control" placeholder="Your Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email Address</label>
+                                            <input type="email" id="settings-email" class="form-control" placeholder="you@example.com" readonly style="opacity: 0.7; cursor: not-allowed;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Primary Profession / Role</label>
+                                            <select id="settings-profession" class="form-control"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Countries Tab -->
+                            <div id="settings-pane-countries" class="settings-pane">
+                                <div class="settings-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                                        <div>
+                                            <h3>Selected Countries</h3>
+                                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Choose which nations appear in your "My Countries" feed and personalized news ranking.</p>
+                                        </div>
+                                        <div class="control-actions">
+                                            <button id="btn-settings-select-all-countries" class="btn btn-outline btn-sm">Select All</button>
+                                            <button id="btn-settings-clear-all-countries" class="btn btn-outline btn-sm">Clear All</button>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="settings-country-search" class="search-input" placeholder="Search countries...">
+                                    <div class="country-grid" id="settings-country-grid"></div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Topics Tab -->
+                            <div id="settings-pane-topics" class="settings-pane">
+                                <div class="settings-card">
+                                    <h3>Topics of Interest</h3>
+                                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; margin-top: 2px;">Select topics you'd like TailoredTimes to prioritize in your "For You" magazine feed.</p>
+                                    <div class="pill-grid" id="settings-topics-grid"></div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Reading Preferences Tab -->
+                            <div id="settings-pane-reading" class="settings-pane">
+                                <div class="settings-card">
+                                    <h3>Reading Format & Style</h3>
+                                    <div class="form-group" style="margin-top: 14px;">
+                                        <label style="font-weight: 700; margin-bottom: 8px; display: block;">Preferred Article Format</label>
+                                        <div class="card-grid" id="settings-format-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));"></div>
+                                    </div>
+
+                                    <div class="form-group" style="margin-top: 24px;">
+                                        <label style="font-weight: 700; margin-bottom: 8px; display: block;">Perspective & Viewpoint</label>
+                                        <div class="card-grid" id="settings-viewpoint-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));"></div>
+                                    </div>
+
+                                    <div class="form-group" style="margin-top: 24px;">
+                                        <label style="font-weight: 700; margin-bottom: 8px; display: block;">Reading Time Available</label>
+                                        <div class="card-grid" id="settings-reading-time-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));"></div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-card" style="margin-top: 20px; border-left: 4px solid var(--accent-red);">
+                                    <h3 style="color: var(--accent-red);">Data & Reset Options</h3>
+                                    <div style="display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap;">
+                                        <button id="btn-clear-saved-data" class="btn btn-outline btn-sm"><i class="fa-regular fa-trash-can"></i> Clear Saved Articles</button>
+                                        <button id="btn-reset-preferences" class="btn btn-outline btn-sm"><i class="fa-solid fa-rotate-left"></i> Reset to Defaults</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Results View -->
+                <div id="search-results-view" class="content-section">
+                    <h1>Search Results for "<span id="search-query-display"></span>"</h1>
+                    <div class="news-grid" id="search-grid"></div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
