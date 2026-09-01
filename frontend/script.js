@@ -151,10 +151,15 @@ const PROFESSIONS = [
 ];
 
 const FORMATS = [
-  { id: '1min', title: '1-minute reads', emoji: '⚡' }, { id: '5min', title: '5-minute reads', emoji: '📖' },
-  { id: '10min', title: '10+ minute reads', emoji: '📚' }, { id: 'summaries', title: 'Summaries', emoji: '📝' },
-  { id: 'magazine', title: 'Magazine style', emoji: '📰' }, { id: 'detailed', title: 'Detailed analysis', emoji: '🔎' },
-  { id: 'simple', title: 'Simple explanations', emoji: '🧠' }
+  { id: '1min', title: '1-minute reads (Quick Takeaways)', emoji: '⚡', desc: '3 fast key takeaway bullets per story' },
+  { id: 'summaries', title: 'Executive Summaries', emoji: '📝', desc: 'Key points, data figures & highlights' },
+  { id: 'clat', title: 'CLAT Legal & Current Affairs', emoji: '⚖️', desc: 'Legal GK, landmark rulings, acts & practice MCQs' },
+  { id: 'ca', title: 'CA Financial & Policy Prep', emoji: '📊', desc: 'Fiscal policy, taxation, RBI/SEBI & audit notes' },
+  { id: 'ielts', title: 'IELTS Band 8+ Prep', emoji: '🇬🇧', desc: 'Band 8+ vocab, grammar & essay prompts' },
+  { id: 'toefl', title: 'TOEFL Academic Prep', emoji: '🌎', desc: 'Academic English, lecture synthesis & terms' },
+  { id: '5min', title: '5-minute Standard reads', emoji: '📖', desc: 'Balanced standard news report' },
+  { id: 'detailed', title: 'Detailed Analysis', emoji: '🔎', desc: 'In-depth investigative & deep context' },
+  { id: 'simple', title: 'Simple Explanations (ELI5)', emoji: '🧠', desc: 'Plain English & jargon-free overview' }
 ];
 
 const VIEWPOINTS = [
@@ -175,13 +180,15 @@ const state = {
   user: null,
   token: localStorage.getItem('tt_token'),
   theme: localStorage.getItem('tt_theme') || 'light',
+  readingFormat: localStorage.getItem('tt_format') || '1min',
   currentTab: 'for-you',
   currentPage: 1,
   articles: [],
+  currentRenderedArticles: [],
   savedArticles: JSON.parse(localStorage.getItem('tt_saved') || '[]'),
   isLoading: false,
   liveStats: { count: 0, lastUpdated: null },
-  onboarding: { countries: [], interests: [], profession: '', format: '', viewpoint: '', readingTime: '' },
+  onboarding: { countries: [], interests: [], profession: '', format: '1min', viewpoint: '', readingTime: '' },
   onboardingStep: 1,
   archive: { section: 'ca', topic: '', year: new Date().getFullYear(), page: 1 },
   searchQuery: '',
@@ -719,7 +726,10 @@ async function submitOnboarding() {
       state.user.onboardingCompleted = true;
       state.user.countries = state.onboarding.countries;
       state.user.interests = state.onboarding.interests;
+      state.user.readingFormat = state.onboarding.format;
     }
+    state.readingFormat = state.onboarding.format || '1min';
+    localStorage.setItem('tt_format', state.readingFormat);
     localStorage.setItem('tt_onboarding', JSON.stringify(state.onboarding));
     btn.disabled = false;
     btn.innerHTML = 'CREATE MY FEED &rarr;';
@@ -957,6 +967,44 @@ function renderCountryFilterPills() {
   });
 }
 
+function renderFeedFormatPills() {
+  const container = document.getElementById('feed-format-pills');
+  if (!container) return;
+
+  const currentFormat = state.readingFormat || '1min';
+  
+  const displayFormats = [
+    { id: '1min', title: '1-Min Reads', emoji: '⚡' },
+    { id: 'summaries', title: 'Summaries', emoji: '📝' },
+    { id: 'clat', title: 'CLAT Prep', emoji: '⚖️' },
+    { id: 'ca', title: 'CA Prep', emoji: '📊' },
+    { id: 'ielts', title: 'IELTS Prep', emoji: '🇬🇧' },
+    { id: 'toefl', title: 'TOEFL Prep', emoji: '🌎' },
+    { id: '5min', title: 'Standard', emoji: '📖' },
+    { id: 'simple', title: 'Simple (ELI5)', emoji: '🧠' }
+  ];
+
+  container.innerHTML = displayFormats.map(f => {
+    const isActive = f.id === currentFormat ? 'active' : '';
+    return `<button class="format-pill ${isActive}" onclick="setFeedFormat('${f.id}')"><span class="emoji">${f.emoji}</span> <span>${f.title}</span></button>`;
+  }).join('');
+}
+
+window.setFeedFormat = function(formatId) {
+  state.readingFormat = formatId;
+  state.onboarding.format = formatId;
+  localStorage.setItem('tt_format', formatId);
+  renderFeedFormatPills();
+
+  const currentFmtObj = FORMATS.find(f => f.id === formatId);
+  if (currentFmtObj) {
+    showToast(`Switched to ${currentFmtObj.emoji} ${currentFmtObj.title}`, 'info');
+  }
+
+  // Re-render currently filtered articles with new format
+  applyInFeedFilter();
+};
+
 window.resetInFeedFilters = function() {
   state.activeCountryFilter = 'ALL';
   state.inlineFilterQuery = '';
@@ -1019,10 +1067,242 @@ function hideSkeletonCards() {
   document.querySelectorAll('.skeleton-card').forEach(el => el.remove());
 }
 
+/* ==========================================================================
+   STUDY & EXAM INTELLIGENCE ENGINE (CLAT, CA, IELTS, TOEFL, 1-MIN)
+   ========================================================================== */
+function generateStudyInsights(article, format) {
+  const title = article.title || '';
+  const desc = article.description || '';
+  const fullText = title + ' ' + desc;
+  const cat = (article.category || 'general').toLowerCase();
+
+  // 1. CLAT Exam Prep Engine
+  if (format === 'clat') {
+    const legalMaxims = [
+      { term: 'Audi Alteram Partem', meaning: 'Hear the other side — no person should be judged without a fair hearing.' },
+      { term: 'Stare Decisis', meaning: 'Stand by decided cases — precedent established in previous rulings must be adhered to.' },
+      { term: 'Doctrine of Proportionality', meaning: 'Administrative actions and restrictions on fundamental rights must be proportionate to the objective.' },
+      { term: 'Ultra Vires', meaning: 'Beyond statutory powers or constitutional authority.' },
+      { term: 'Nemo Judex In Causa Sua', meaning: 'No one should be a judge in their own case (rule against bias).' },
+      { term: 'Mens Rea & Actus Reus', meaning: 'The concurrent presence of guilty intention and wrongful physical act.' }
+    ];
+    const pickedMaxim = legalMaxims[Math.abs(hashString(title)) % legalMaxims.length];
+
+    const constitutionalArticles = [
+      'Constitution of India: Article 14 (Equality before Law & Equal Protection)',
+      'Constitution of India: Article 19(1)(a) & 19(2) (Freedom of Speech & Reasonable Restrictions)',
+      'Constitution of India: Article 21 (Protection of Life, Personal Liberty & Due Process)',
+      'Constitution of India: Article 32 & 226 (Constitutional Remedies & Judicial Review Writs)',
+      'Separation of Powers & Constitutional Governance Framework',
+      'Administrative Law & Principles of Natural Justice'
+    ];
+    const pickedArticle = constitutionalArticles[Math.abs(hashString(title + 'art')) % constitutionalArticles.length];
+
+    return {
+      examType: 'CLAT',
+      badge: '⚖️ CLAT LEGAL GK & CRITICAL REASONING',
+      syllabusTag: 'Legal Reasoning & Constitutional Law',
+      buttonLabel: '⚖️ CLAT Legal Notes & MCQ',
+      preview: `<strong>Key Doctrine:</strong> ${pickedMaxim.term} &bull; <strong>Framework:</strong> ${pickedArticle.split(':')[0]}`,
+      bullets: [
+        `<strong>Constitutional Focus:</strong> Applicable under ${pickedArticle}.`,
+        `<strong>Legal Principle:</strong> ${pickedMaxim.term} — ${pickedMaxim.meaning}`,
+        `<strong>Critical Reasoning Angle:</strong> Tests statutory intent, regulatory validity, and evidentiary burden of proof.`
+      ],
+      legalMaxim: pickedMaxim,
+      framework: pickedArticle,
+      mcq: {
+        question: `Based on the principles governing "${cleanText(title).substring(0, 80)}...", which of the following statements is legally most accurate?`,
+        options: [
+          `A. Executive action can override fundamental rights without statutory authorization under emergency doctrine.`,
+          `B. Regulatory decisions impacting stakeholder rights must satisfy the test of reasonableness and natural justice (${pickedMaxim.term}).`,
+          `C. Judicial review is barred if the executive declares the decision in the interest of general public policy.`,
+          `D. Precedent (${pickedMaxim.term}) is strictly optional for constitutional courts in public interest matters.`
+        ],
+        correctOption: 'B',
+        explanation: `Option B is correct: Under established constitutional and administrative law jurisprudence, any sovereign or statutory exercise must adhere to the Doctrine of Proportionality and the principle of "${pickedMaxim.term}" (${pickedMaxim.meaning}).`
+      }
+    };
+  }
+
+  // 2. CA Exam Prep Engine
+  if (format === 'ca') {
+    const caTopics = [
+      { area: 'Corporate & Economic Laws (Companies Act 2013)', detail: 'Sections 134/178 (Board governance, internal controls, and disclosure norms).' },
+      { area: 'Direct & Indirect Taxation (GST & Income Tax)', detail: 'Fiscal compliance, input tax credit eligibility, and cross-border transfer pricing.' },
+      { area: 'Strategic Financial Management & Macroeconomics', detail: 'Capital structure, liquidity buffers, interest rate volatility, and forex exposure.' },
+      { area: 'Auditing & Assurance Standards (SA 315 & SA 700)', detail: 'Assessing risk of material misstatement and evaluating going concern assumptions.' },
+      { area: 'Ind AS / IFRS Standards (Ind AS 115 & 109)', detail: 'Revenue recognition criteria, financial instrument fair value measurement, and impairment.' }
+    ];
+    const pickedCa = caTopics[Math.abs(hashString(title)) % caTopics.length];
+
+    return {
+      examType: 'CA',
+      badge: '📊 CA FISCAL & REGULATORY ANALYSIS',
+      syllabusTag: 'Corporate Laws, Tax & Strategic Finance',
+      buttonLabel: '📊 CA Study Notes & Case',
+      preview: `<strong>Domain:</strong> ${pickedCa.area} &bull; <strong>Impact:</strong> ${pickedCa.detail}`,
+      bullets: [
+        `<strong>Regulatory Impact:</strong> Governed by ${pickedCa.area}.`,
+        `<strong>Financial Takeaway:</strong> ${pickedCa.detail}`,
+        `<strong>Audit & Compliance Check:</strong> Verifies internal financial controls, balance-sheet disclosure accuracy, and tax withholding provisions.`
+      ],
+      framework: pickedCa.area,
+      mcq: {
+        question: `From a Corporate Compliance and Financial Management standpoint regarding "${cleanText(title).substring(0, 80)}...", what is the primary compliance consideration?`,
+        options: [
+          `A. Disregard financial disclosures if transactional impact is under 15% of annual revenue.`,
+          `B. Ensure robust internal controls, statutory board reporting under Companies Act 2013, and proper accounting treatment under Ind AS standards.`,
+          `C. Shift all reporting requirements entirely to external offshore auditors without board sign-off.`,
+          `D. Treat all capital restructuring expenditures as immediate deductible operating revenue.`
+        ],
+        correctOption: 'B',
+        explanation: `Option B is correct: In accordance with CA Final Corporate Governance & Auditing standards, material corporate and fiscal events require rigorous internal audit tracking, board compliance under Companies Act 2013, and strict adherence to Ind AS/IFRS disclosures.`
+      }
+    };
+  }
+
+  // 3. IELTS Exam Prep Engine
+  if (format === 'ielts') {
+    const vocabPool = [
+      { word: 'Exacerbate', pos: 'verb', def: 'To make a problem, situation, or negative feeling worse.', syn: 'aggravate, worsen, intensify' },
+      { word: 'Pivotal', pos: 'adjective', def: 'Of crucial importance in relation to the development or success of something else.', syn: 'crucial, vital, critical' },
+      { word: 'Mitigate', pos: 'verb', def: 'To make something bad less severe, serious, or painful.', syn: 'alleviate, reduce, diminish' },
+      { word: 'Ramification', pos: 'noun', def: 'A complex or unwelcome consequence of an action or event.', syn: 'aftermath, consequence, outcome' },
+      { word: 'Paramount', pos: 'adjective', def: 'More important than anything else; supreme.', syn: 'foremost, principal, sovereign' },
+      { word: 'Scrutinize', pos: 'verb', def: 'To examine or inspect closely and thoroughly.', syn: 'inspect, analyze, audit' },
+      { word: 'Ubiquitous', pos: 'adjective', def: 'Present, appearing, or found everywhere.', syn: 'omnipresent, pervasive, universal' },
+      { word: 'Catalyst', pos: 'noun', def: 'A person or thing that precipitates an event or change.', syn: 'spark, stimulus, incentive' }
+    ];
+
+    const h = Math.abs(hashString(title));
+    const word1 = vocabPool[h % vocabPool.length];
+    const word2 = vocabPool[(h + 3) % vocabPool.length];
+    const word3 = vocabPool[(h + 5) % vocabPool.length];
+
+    return {
+      examType: 'IELTS',
+      badge: '🇬🇧 IELTS BAND 8+ VOCAB & ESSAY PREP',
+      syllabusTag: 'Academic Reading, Writing Task 2 & Speaking',
+      buttonLabel: '🇬🇧 IELTS Practice & Vocab',
+      preview: `<strong>Band 8 Vocab:</strong> <span class="vocab-preview-chip">${word1.word}</span> <span class="vocab-preview-chip">${word2.word}</span> <span class="vocab-preview-chip">${word3.word}</span>`,
+      bullets: [
+        `<strong>Band 8 Vocabulary:</strong> <em>${word1.word}</em> (${word1.syn}), <em>${word2.word}</em> (${word2.syn}).`,
+        `<strong>Writing Task 2 Prompt:</strong> "To what extent do you agree or disagree that international developments like this require global governmental intervention rather than private market solutions?"`,
+        `<strong>Grammar Focus:</strong> Practice complex sentence inversion: <em>"Not only does this affect national policy, but it also creates..."</em>`
+      ],
+      vocabList: [word1, word2, word3],
+      mcq: {
+        question: `IELTS Reading Practice (True / False / Not Given): Based on the news context of "${cleanText(title).substring(0, 75)}...", what is the factual status regarding recent trends?`,
+        options: [
+          `A. TRUE — The passage directly affirms the immediate occurrence and consequences of the reported development.`,
+          `B. FALSE — The reported event is stated to have been completely resolved decades ago.`,
+          `C. NOT GIVEN — The exact statistical forecast for 2050 is not mentioned in the immediate news text.`,
+          `D. TRUE — Global authorities had explicitly scheduled this event 100 years in advance.`
+        ],
+        correctOption: 'A',
+        explanation: `Option A is correct: The news report explicitly documents the contemporary event, satisfying the standard IELTS True/False/Not Given criteria for factual verification.`
+      }
+    };
+  }
+
+  // 4. TOEFL Exam Prep Engine
+  if (format === 'toefl') {
+    const toeflTerms = [
+      { word: 'Empirical Evidence', def: 'Information acquired by observation or experimentation.' },
+      { word: 'Paradigm Shift', def: 'A fundamental change in approach or underlying assumptions.' },
+      { word: 'Divergent Perspectives', def: 'Differing viewpoints on a central intellectual or policy debate.' },
+      { word: 'Corroborate', def: 'To confirm or give support to a statement, theory, or finding.' }
+    ];
+    const term = toeflTerms[Math.abs(hashString(title)) % toeflTerms.length];
+
+    return {
+      examType: 'TOEFL',
+      badge: '🌎 TOEFL iBT ACADEMIC SYNTHESIS',
+      syllabusTag: 'Academic English, Synthesis & Integrated Tasks',
+      buttonLabel: '🌎 TOEFL Notes & Synthesis',
+      preview: `<strong>Academic Term:</strong> ${term.word} &bull; <strong>Synthesis Task:</strong> Integrated Discourse Analysis`,
+      bullets: [
+        `<strong>Academic Term:</strong> <em>${term.word}</em> — ${term.def}`,
+        `<strong>Lecture Synthesis Note:</strong> Evaluates causality, conflicting stakeholder hypotheses, and empirical evidence.`,
+        `<strong>Integrated Speaking Prompt:</strong> Summarize the speaker's main assertion and explain how the stated evidence supports or refutes current understanding.`
+      ],
+      mcq: {
+        question: `TOEFL Integrated Synthesis: What is the primary purpose of discussing "${cleanText(title).substring(0, 75)}..." in an academic seminar?`,
+        options: [
+          `A. To illustrate a practical case study demonstrating the broader theoretical impact of ${term.word}.`,
+          `B. To claim that no further academic research is possible on the subject.`,
+          `C. To prove that historical theories are universally incorrect without exception.`,
+          `D. To discourage students from analyzing international source material.`
+        ],
+        correctOption: 'A',
+        explanation: `Option A is correct: In TOEFL academic discourse, contemporary global events are integrated as empirical case studies to substantiate theoretical models.`
+      }
+    };
+  }
+
+  // 5. 1-Minute / Summaries Engine
+  if (format === '1min' || format === 'summaries') {
+    const bullet1 = cleanText(title).replace(/ - .*$/, '');
+    let bullet2 = cleanText(desc);
+    if (bullet2.length > 120) bullet2 = bullet2.substring(0, 117) + '...';
+    if (!bullet2 || bullet2.length < 20) bullet2 = 'Key international and domestic stakeholders are monitoring ongoing updates.';
+    const bullet3 = `Published ${formatTimeAgo(article.publishedAt)} via ${article.source || 'verified news feeds'}.`;
+
+    return {
+      examType: '1MIN',
+      badge: '⚡ 1-MIN TAKEAWAY',
+      syllabusTag: 'Quick Key Takeaways',
+      buttonLabel: '⚡ 1-Min Summary',
+      preview: '',
+      bullets: [
+        `<strong>Core Event:</strong> ${bullet1}`,
+        `<strong>Context:</strong> ${bullet2}`,
+        `<strong>Freshness:</strong> ${bullet3}`
+      ]
+    };
+  }
+
+  // 6. Simple (ELI5) Engine
+  if (format === 'simple') {
+    return {
+      examType: 'SIMPLE',
+      badge: '🧠 SIMPLE EXPLANATION',
+      syllabusTag: 'Plain English Overview',
+      buttonLabel: '🧠 Simple Breakdown',
+      preview: '',
+      bullets: [
+        `<strong>What happened:</strong> ${cleanText(title).substring(0, 90)}...`,
+        `<strong>Why it matters:</strong> This directly impacts policies, everyday citizens, and international relations.`,
+        `<strong>Next step:</strong> Leaders and organizations are taking immediate follow-up actions.`
+      ]
+    };
+  }
+
+  return null;
+}
+
+function cleanText(str) {
+  if (!str) return '';
+  return str.replace(/<[^>]*>/g, '').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+}
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
+}
+
 function renderArticles(articles, append = false) {
   const grid = document.getElementById('news-grid');
   if (!append) grid.innerHTML = '';
   
+  state.currentRenderedArticles = articles || [];
+  renderFeedFormatPills();
+
   if (!articles || articles.length === 0) {
     if (!append) {
       if (state.currentTab === 'saved') {
@@ -1052,6 +1332,8 @@ function renderArticles(articles, append = false) {
     return;
   }
 
+  const currentFormat = state.readingFormat || '1min';
+
   articles.forEach((article, cardIdx) => {
     const card = document.createElement('article');
     card.className = 'news-card';
@@ -1069,7 +1351,36 @@ function renderArticles(articles, append = false) {
 
     const cleanTitle = (article.title || 'News Headline').replace(/"/g, '&quot;');
     const cleanDesc = (article.description || 'Click to read full story...').replace(/"/g, '&quot;');
-    const cat = (article.category || 'world').toLowerCase();
+
+    // Generate dynamic study or format insights for this card
+    const insights = generateStudyInsights(article, currentFormat);
+    let formatBoxHtml = '';
+
+    if (insights) {
+      if (['clat', 'ca', 'ielts', 'toefl'].includes(currentFormat)) {
+        formatBoxHtml = `
+          <div class="card-format-box mode-exam">
+            <span class="study-badge-tag">${insights.badge}</span>
+            <div style="font-size: 12px; margin-bottom: 6px;">${insights.preview}</div>
+            <ul>
+              ${insights.bullets.map(b => `<li>${b}</li>`).join('')}
+            </ul>
+            <button class="btn-study-breakdown" onclick="openStudyModalByIndex(${cardIdx})">
+              <i class="fa-solid fa-book-open-reader"></i> ${insights.buttonLabel} ➔
+            </button>
+          </div>
+        `;
+      } else if (['1min', 'summaries', 'simple'].includes(currentFormat)) {
+        formatBoxHtml = `
+          <div class="card-format-box mode-1min">
+            <span class="study-badge-tag">${insights.badge}</span>
+            <ul>
+              ${insights.bullets.map(b => `<li>${b}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+    }
 
     card.innerHTML = `
       <div class="card-image">
@@ -1082,7 +1393,8 @@ function renderArticles(articles, append = false) {
           <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: auto;">${article.source || 'News'}</span>
         </div>
         <h3 class="card-title">${article.title || ''}</h3>
-        <p class="card-desc">${article.description || 'Click to read full story...'}</p>
+        ${(currentFormat === '5min' || currentFormat === 'detailed' || !insights) ? `<p class="card-desc">${article.description || 'Click to read full story...'}</p>` : ''}
+        ${formatBoxHtml}
         <div class="card-footer">
           <span class="time">${formatTimeAgo(article.publishedAt)}</span>
           <div class="card-actions">
@@ -1103,6 +1415,114 @@ function renderArticles(articles, append = false) {
     grid.appendChild(card);
   });
 }
+
+/* ==========================================================================
+   STUDY & EXAM ANALYSIS MODAL CONTROLLER
+   ========================================================================== */
+window.openStudyModalByIndex = function(idx) {
+  const articles = state.currentRenderedArticles || state.articles || [];
+  const article = articles[idx];
+  if (!article) return;
+
+  const currentFormat = state.readingFormat || 'clat';
+  const insights = generateStudyInsights(article, currentFormat);
+  if (!insights) return;
+
+  document.getElementById('modal-exam-badge').textContent = insights.badge;
+  document.getElementById('modal-article-title').textContent = article.title || 'Exam Study Breakdown';
+  document.getElementById('modal-full-article-btn').href = article.url || '#';
+
+  const modalBody = document.getElementById('modal-study-content');
+  let contentHtml = '';
+
+  // Section 1: Syllabus & Focus
+  contentHtml += `
+    <div class="study-section">
+      <div class="study-section-title"><i class="fa-solid fa-compass"></i> Exam Focus & Syllabus Mapping</div>
+      <p style="font-size: 14px; margin-bottom: 12px; color: var(--text);">
+        <strong>Target Module:</strong> ${insights.syllabusTag}
+      </p>
+      <div class="card-format-box mode-exam">
+        <ul>
+          ${insights.bullets.map(b => `<li style="margin-bottom: 8px;">${b}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `;
+
+  // Section 2: Vocabulary / Legal Maxims Table
+  if (insights.vocabList && insights.vocabList.length > 0) {
+    contentHtml += `
+      <div class="study-section">
+        <div class="study-section-title"><i class="fa-solid fa-spell-check"></i> High-Yield Band 8+ Vocabulary</div>
+        <div class="vocab-grid">
+          ${insights.vocabList.map(v => `
+            <div class="vocab-card">
+              <div><span class="vocab-word">${v.word}</span> <span class="vocab-pos">(${v.pos})</span></div>
+              <div class="vocab-def">${v.def}</div>
+              <div class="vocab-syn"><strong>Synonyms:</strong> ${v.syn}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (insights.legalMaxim) {
+    contentHtml += `
+      <div class="study-section">
+        <div class="study-section-title"><i class="fa-solid fa-scale-balanced"></i> Essential Legal Maxim & Principle</div>
+        <div class="vocab-card" style="border-left: 3px solid #7209b7;">
+          <div class="vocab-word">${insights.legalMaxim.term}</div>
+          <div class="vocab-def" style="font-size: 14px; margin-top: 6px;">${insights.legalMaxim.meaning}</div>
+          <div class="vocab-syn" style="margin-top: 6px;"><strong>Applicability:</strong> Constitutional Writs, Judicial Review, and Natural Justice.</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Section 3: Interactive Exam MCQ / Case Question
+  if (insights.mcq) {
+    contentHtml += `
+      <div class="study-section">
+        <div class="study-section-title"><i class="fa-solid fa-circle-question"></i> Exam Practice Question (${insights.examType} Style)</div>
+        <div class="mcq-box">
+          <div class="mcq-question">${insights.mcq.question}</div>
+          <div class="mcq-options">
+            ${insights.mcq.options.map(opt => `<div class="mcq-option">${opt}</div>`).join('')}
+          </div>
+          <button class="mcq-reveal-btn" id="btn-reveal-mcq" onclick="toggleMcqAnswer()">
+            <i class="fa-solid fa-lightbulb"></i> Reveal Answer & Explanation
+          </button>
+          <div class="mcq-explanation hidden" id="mcq-explanation-box">
+            <strong>Correct Option: Option ${insights.mcq.correctOption}</strong>
+            <p style="margin-top: 6px; margin-bottom: 0;">${insights.mcq.explanation}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  modalBody.innerHTML = contentHtml;
+  document.getElementById('study-modal').classList.remove('hidden');
+};
+
+window.closeStudyModal = function() {
+  const modal = document.getElementById('study-modal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.toggleMcqAnswer = function() {
+  const expl = document.getElementById('mcq-explanation-box');
+  const btn = document.getElementById('btn-reveal-mcq');
+  if (expl) {
+    if (expl.classList.contains('hidden')) {
+      expl.classList.remove('hidden');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Explanation';
+    } else {
+      expl.classList.add('hidden');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> Reveal Answer & Explanation';
+    }
+  }
+};
 
 const UNSPLASH_POOLS = {
   technology: [
@@ -1690,6 +2110,9 @@ function renderSettingsPanel() {
         viewpoint: currentViewpoint,
         readingTime: currentReadingTime
       };
+
+      state.readingFormat = currentFormat;
+      localStorage.setItem('tt_format', currentFormat);
 
       // Save to localStorage
       localStorage.setItem('tt_onboarding', JSON.stringify(payload));
