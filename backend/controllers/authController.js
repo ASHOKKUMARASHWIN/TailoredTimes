@@ -76,10 +76,9 @@ const register = async (req, res) => {
       };
     }
 
-    try {
-      await emailService.sendRegistrationNotification(newUser);
-      await emailService.sendWelcomeEmail(newUser);
-    } catch (e) {}
+    // Fire-and-forget email delivery in background without blocking response
+    emailService.sendRegistrationNotification(newUser).catch(() => {});
+    emailService.sendWelcomeEmail(newUser).catch(() => {});
 
     const token = generateToken(newUser);
 

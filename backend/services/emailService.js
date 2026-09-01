@@ -1,22 +1,24 @@
 const nodemailer = require('nodemailer');
 
-let transporter;
+let transporter = null;
 
-try {
-  transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER || 'test@example.com',
-      pass: process.env.EMAIL_PASS || 'password'
-    }
-  });
-} catch (error) {
-  console.error('Error configuring email service:', error);
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.EMAIL_USER !== 'test@example.com') {
+  try {
+    transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+  } catch (error) {
+    console.error('Error configuring email service:', error.message);
+  }
 }
 
 const sendRegistrationNotification = async (newUser) => {
+  if (!transporter) return;
   try {
-    if (!transporter) return;
     const mailOptions = {
       from: process.env.EMAIL_USER || 'no-reply@tailoredtimes.com',
       to: process.env.NOTIFY_EMAIL || process.env.EMAIL_USER || 'admin@tailoredtimes.com',
@@ -37,8 +39,8 @@ const sendRegistrationNotification = async (newUser) => {
 };
 
 const sendWelcomeEmail = async (user) => {
+  if (!transporter) return;
   try {
-    if (!transporter) return;
     const mailOptions = {
       from: process.env.EMAIL_USER || 'welcome@tailoredtimes.com',
       to: user.email,

@@ -304,8 +304,17 @@ async function apiCall(path, method = 'GET', body = null) {
     if (body) options.body = JSON.stringify(body);
     const res = await fetch(API_BASE + path, options);
     if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(errText || `API Error: ${res.status}`);
+      let errMsg = `Request failed (${res.status})`;
+      try {
+        const errData = await res.json();
+        if (errData && errData.message) errMsg = errData.message;
+      } catch (e) {
+        try {
+          const txt = await res.text();
+          if (txt) errMsg = txt;
+        } catch (e2) {}
+      }
+      throw new Error(errMsg);
     }
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
