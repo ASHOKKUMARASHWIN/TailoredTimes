@@ -2,9 +2,12 @@
  * Comprehensive High-Yield Study & Exam Prep Articles for TailoredTimes
  * 
  * Includes curated curriculum-aligned content for:
- * 1. General Students (STEM, Education, Career, Current Affairs)
- * 2. IELTS Prep (Band 8+ Reading, Writing Tasks 1 & 2, Speaking Cue Cards, Advanced Vocab)
- * 3. TOEFL Prep (Academic English, Integrated Writing, Lecture Listening, Academic Lexicon)
+ * 1. General Students (STEM, Education, Career, Economics)
+ * 2. NEET Prep (Medical / Biology, Physiology, Optics, Organic Chemistry)
+ * 3. JEE Prep (Engineering / Rotational Physics, Calculus, Electrodynamics, Physical Chemistry)
+ * 4. Digital SAT Prep (Reading & Writing, Math, Grammar, Quadratic Models)
+ * 5. IELTS Prep (Band 8+ Reading, Writing Tasks 1 & 2, Advanced Vocab)
+ * 6. TOEFL Prep (Academic English, Integrated Writing, Lecture Listening)
  */
 
 const generalStudentArticles = [
@@ -145,6 +148,197 @@ const generalStudentArticles = [
     "description": "Strategic analysis of advanced semiconductor supply chains, ASML photolithography, TSMC fabrication dominance, and the CHIPS Act.",
     "syllabus": "International Relations & Technology Policy",
     "content": "1. The Physics of Extreme Ultraviolet (EUV) Lithography:\nAs silicon transistor gate lengths shrank below 7 nanometers, conventional 193 nm deep ultraviolet immersion lithography reached physical diffraction limits. ASML's EUV scanners produce light at a microscopic 13.5 nm wavelength by firing high-power CO₂ lasers at 50,000 molten tin droplets per second in a vacuum chamber, generating high-temperature tin plasma.\n\n2. Precision Optics and Mirrors:\nBecause 13.5 nm EUV light is absorbed by all matter (including air and glass lenses), the optical system relies on specialized Bragg multi-layer mirrors coated with alternating nanometer-thin layers of molybdenum and silicon, polished to sub-atomic tolerances.\n\n3. Geopolitical Supply Chain Bottlenecks:\nLeading-edge 3nm and 2nm semiconductor manufacturing forms a critical chokepoint in global geopolitics:\n- TSMC (Taiwan) manufactures over 90% of the world's most advanced AI and mobile processors.\n- ASML (Netherlands) holds a complete global monopoly on EUV lithography machines.\n- Geopolitical legislation like the US CHIPS and Science Act and European Chips Act aim to geographically diversify fabrication facilities to hedge against cross-strait geopolitical supply shocks."
+  }
+];
+
+const neetArticles = [
+  {
+    "id": "NEET-01",
+    "code": "NEET-01",
+    "title": "Molecular Basis of Inheritance: DNA Replication Machinery & Okazaki Fragment Processing",
+    "section": "neet",
+    "topic": "Biology",
+    "categoryName": "Genetics & Molecular Biology",
+    "difficulty": "Advanced",
+    "wordCount": 520,
+    "coreConcept": "Semi-conservative replication (Meselson-Stahl), DNA Polymerase III proofreading (3'→5' exonuclease), and RNA primer excision via DNA Polymerase I.",
+    "syllabus": "NEET Biology: Class 12 Genetics & Evolution",
+    "content": "1. The Semi-Conservative Replication Complex:\nDNA replication in eukaryotes and prokaryotes occurs with extreme fidelity (error rate < 1 in 10⁹ bases). DNA Helicase unwinds the double helix at the Replication Fork, while Single-Strand DNA-Binding Proteins (SSBs) stabilize single strands and Topoisomerase (DNA Gyrase) relieves positive supercoiling strain.\n\n2. Leading vs. Lagging Strand Synthesis:\nBecause DNA Polymerases synthesize DNA exclusively in the 5'→3' direction:\n- Leading Strand: Synthesized continuously towards the advancing replication fork requiring a single RNA primer synthesized by RNA Primase.\n- Lagging Strand: Synthesized discontinuously away from the replication fork as short Okazaki fragments (1000–2000 nt in prokaryotes, 100–200 nt in eukaryotes).\n\n3. Primer Removal & Nick Ligation:\nDNA Polymerase I uses 5'→3' exonuclease activity to remove RNA primers and fills the gaps with deoxyribonucleotides. Finally, DNA Ligase catalyzes phosphodiester bond formation between adjacent 3'-OH and 5'-phosphate ends utilizing ATP/NAD⁺.\n\n4. High-Yield NEET Takeaways:\n- Helicase unzips hydrogen bonds between nitrogenous bases (A=T with 2 H-bonds, G≡C with 3 H-bonds).\n- DNA Polymerase III is the main catalytic enzyme for elongation; DNA Polymerase I performs proofreading and primer removal."
+  },
+  {
+    "id": "NEET-02",
+    "code": "NEET-02",
+    "title": "Human Cardiovascular Physiology: Cardiac Cycle, ECG Waves & Blood Pressure Regulation",
+    "section": "neet",
+    "topic": "Biology",
+    "categoryName": "Human Physiology",
+    "difficulty": "Intermediate",
+    "wordCount": 500,
+    "coreConcept": "SA node pacemaker potential, P-QRS-T wave mapping on standard 12-lead ECG, and RAAS hormonal blood pressure feedback.",
+    "syllabus": "NEET Biology: Class 11 Body Fluids and Circulation",
+    "content": "1. Sequential Phases of the Cardiac Cycle (Duration: 0.8 seconds at 72 bpm):\n- Joint Diastole (0.4 s): All four chambers relaxed; AV valves open; 70% of ventricular filling occurs passively.\n- Atrial Systole (0.1 s): SA node fires; atria contract, pumping the remaining 30% of blood into ventricles (atrial kick).\n- Ventricular Systole (0.3 s): Isovolumetric contraction closes AV valves (First Heart Sound \"LUB\"); ventricular ejection opens semilunar valves (Stroke Volume ≈ 70 mL; Cardiac Output = 70 mL × 72 bpm ≈ 5 L/min).\n- Isovolumetric Relaxation: Ventricles relax; closure of semilunar valves generates the Second Heart Sound (\"DUB\").\n\n2. Electrocardiogram (ECG) Deflection Waves:\n- P Wave: Atrial depolarization (triggered by Sinoatrial SA node).\n- QRS Complex: Rapid ventricular depolarization (AV bundle → Bundle of His → Purkinje fibers).\n- T Wave: Ventricular repolarization (recovery phase).\n\n3. Hormonal Blood Pressure Regulation (RAAS System):\nA drop in glomerular blood flow triggers Juxtaglomerular (JG) cells to release Renin, converting Angiotensinogen → Angiotensin I. ACE converts it to Angiotensin II (a potent vasoconstrictor), stimulating the Adrenal Cortex to secrete Aldosterone (reabsorbing Na⁺ and H₂O in DCT)."
+  },
+  {
+    "id": "NEET-03",
+    "code": "NEET-03",
+    "title": "Chemical Bonding & Hybridization: VSEPR Geometry, Molecular Orbital Theory (MOT)",
+    "section": "neet",
+    "topic": "Chemistry",
+    "categoryName": "Inorganic Chemistry",
+    "difficulty": "Intermediate",
+    "wordCount": 480,
+    "coreConcept": "Bond order calculation: BO = ½(N_b - N_a), predicting paramagnetic behavior in O₂ and B₂ molecules.",
+    "syllabus": "NEET Chemistry: Chemical Bonding & Molecular Structure",
+    "content": "1. Valence Shell Electron Pair Repulsion (VSEPR) Theory:\nElectron pairs around a central atom repel each other to adopt geometries that minimize electrostatic repulsion. The order of repulsion strength is:\nLone Pair - Lone Pair > Lone Pair - Bond Pair > Bond Pair - Bond Pair.\n- NH₃: sp³ hybridized (3 bond pairs + 1 lone pair) → Trigonal Pyramidal (Bond angle: 107° due to lp-bp repulsion).\n- H₂O: sp³ hybridized (2 bond pairs + 2 lone pairs) → Bent / V-Shaped (Bond angle: 104.5°).\n- SF₄: sp³d hybridized (4 bp + 1 lp in equatorial position) → See-Saw geometry.\n\n2. Molecular Orbital Theory (MOT) Principles:\nAtomic orbitals combine linearly (LCAO) to form Bonding (σ, π) and Anti-bonding (σ*, π*) molecular orbitals.\n- For molecules with ≤ 14 electrons (B₂, C₂, N₂): Energy order is σ1s < σ*1s < σ2s < σ*2s < (π2p_x = π2p_y) < σ2p_z < (π*2p_x = π*2p_y) < σ*2p_z.\n- For molecules with > 14 electrons (O₂, F₂): Energy order is σ1s < σ*1s < σ2s < σ*2s < σ2p_z < (π2p_x = π2p_y) < (π*2p_x = π*2p_y) < σ*2p_z.\n- Paramagnetism of O₂: O₂ has 16 electrons; the last two electrons occupy degenerate π*2p_x and π*2p_y singly, confirming experimental paramagnetism."
+  },
+  {
+    "id": "NEET-04",
+    "code": "NEET-04",
+    "title": "Ray Optics & Optical Instruments: Lens Maker's Formula & Compound Microscope Magnification",
+    "section": "neet",
+    "topic": "Physics",
+    "categoryName": "Ray Optics",
+    "difficulty": "Advanced",
+    "wordCount": 490,
+    "coreConcept": "Lens Maker's Formula: 1/f = (μ - 1)(1/R₁ - 1/R₂), and total magnifying power of compound optical systems.",
+    "syllabus": "NEET Physics: Ray Optics & Optical Instruments",
+    "content": "1. Lens Maker's Equation:\nFor a thin lens of refractive index μ₂ placed in a medium of refractive index μ₁ with surfaces of radius of curvature R₁ and R₂, the focal length f is given by:\n1/f = ((μ₂/μ₁) - 1) × [1/R₁ - 1/R₂].\nSign Convention: For a biconvex lens, R₁ is positive (+), and R₂ is negative (-). Therefore, 1/f = (μ - 1)(1/R₁ + 1/R₂), confirming that a convex lens has a positive focal length in air.\n\n2. Compound Microscope Ray Diagram & Magnification:\nA compound microscope consists of an Objective lens (small focal length f_o, small aperture) and an Eyepiece lens (larger focal length f_e, larger aperture).\n- Total Magnification (at least distance of distinct vision D = 25 cm):\n  m = m_o × m_e = (-L / f_o) × (1 + D / f_e), where L is the tube length.\n- Total Magnification (at normal adjustment / image at infinity):\n  m = (-L / f_o) × (D / f_e)."
+  },
+  {
+    "id": "NEET-05",
+    "code": "NEET-05",
+    "title": "Biomolecules & Enzyme Kinetics: Michaelis-Menten Equation & Competitive Inhibition",
+    "section": "neet",
+    "topic": "Biology",
+    "categoryName": "Biochemistry & Biomolecules",
+    "difficulty": "Intermediate",
+    "wordCount": 470,
+    "coreConcept": "V_max and K_m relationships, competitive inhibition (K_m increases, V_max unchanged), and allosteric feedback regulation.",
+    "syllabus": "NEET Biology & Chemistry: Biomolecules & Enzymes",
+    "content": "1. Enzyme Catalysis Mechanism:\nEnzymes are biocatalysts that accelerate reaction rates by lowering the Activation Energy (E_a) barrier without altering the equilibrium constant (K_eq) or standard Gibbs free energy (ΔG°).\n\n2. Michaelis-Menten Kinetics:\nThe reaction velocity v as a function of substrate concentration [S] is modeled as:\nv = (V_max [S]) / (K_m + [S]), where K_m (Michaelis constant) is the substrate concentration at which the reaction velocity reaches half of V_max (v = V_max / 2). A lower K_m reflects higher substrate affinity.\n\n3. Enzyme Inhibition Classification:\n- Competitive Inhibition: The inhibitor resembles the substrate and competes for the active catalytic site (e.g. Malonate inhibiting Succinate Dehydrogenase). Effect: K_m increases (lower apparent affinity), but V_max remains unchanged (can be overcome by excess substrate).\n- Non-Competitive Inhibition: Inhibitor binds to an allosteric site (e.g. Cyanide on Cytochrome Oxidase). Effect: V_max decreases, while K_m remains unchanged."
+  }
+];
+
+const jeeArticles = [
+  {
+    "id": "JEE-01",
+    "code": "JEE-01",
+    "title": "Rotational Dynamics: Moment of Inertia Tensors & Parallel/Perpendicular Axis Theorems",
+    "section": "jee",
+    "topic": "Physics",
+    "categoryName": "Classical Mechanics",
+    "difficulty": "Advanced",
+    "wordCount": 520,
+    "coreConcept": "Torque-angular acceleration relation τ = Iα, rolling without slipping v_cm = Rω, and angular momentum conservation.",
+    "syllabus": "JEE Advanced Physics: Mechanics & Rotational Motion",
+    "content": "1. Theorems of Moment of Inertia:\n- Parallel Axis Theorem: For any rigid body of mass M, the moment of inertia about an axis parallel to a central axis passing through the Center of Mass (CM) is:\n  I = I_cm + M d², where d is the perpendicular distance between axes.\n- Perpendicular Axis Theorem (Planar Lamina Only): For a two-dimensional sheet in the xy-plane:\n  I_z = I_x + I_y.\n\n2. Pure Rolling Without Slipping on an Incline:\nWhen a symmetric body (sphere, cylinder, ring) of mass M, radius R, and radius of gyration k rolls down an incline of angle θ without slipping:\n- Acceleration of Center of Mass: a_cm = (g sin θ) / (1 + k²/R²).\n- Minimum Coefficient of Friction Required: μ_min = (tan θ) / (1 + R²/k²).\n- Fraction of Total Kinetic Energy in Rotation: K_rot / K_total = (k²/R²) / (1 + k²/R²).\n\n3. Angular Momentum Conservation:\nWhen net external torque about an axis is zero (Στ_ext = 0), total angular momentum L = Iω = constant. This governs central-force planetary orbits and inelastic collision simulations."
+  },
+  {
+    "id": "JEE-02",
+    "code": "JEE-02",
+    "title": "Electromagnetic Induction & Maxwell's Equations: Faraday's Law & Poynting Vector",
+    "section": "jee",
+    "topic": "Physics",
+    "categoryName": "Electrodynamics",
+    "difficulty": "Advanced",
+    "wordCount": 510,
+    "coreConcept": "Differential form of Faraday's Law ∇ × E = -∂B/∂t and Displacement Current in Ampère-Maxwell equation.",
+    "syllabus": "JEE Main & Advanced Physics: Electromagnetism",
+    "content": "1. Faraday-Lenz Law of Induction:\nInduced electromotive force (emf) is proportional to the negative time rate of change of magnetic flux:\nε = -dΦ_B / dt = -d/dt [∫ B · dA].\nLenz's Law ensures energy conservation: the induced current flows in a direction such that its own magnetic field opposes the change in flux producing it.\n\n2. Motional EMF and Self-Inductance:\nFor a conducting rod of length L moving with velocity v perpendicular to a uniform magnetic field B: ε = B v L.\nMagnetic Energy stored in an inductor: U = ½ L I², with magnetic energy density u_B = B² / (2μ₀).\n\n3. Maxwell's Correction & Displacement Current:\nJames Clerk Maxwell identified an inconsistency in Ampère's circuital law during capacitor charging:\nDisplacement Current I_d = ε₀ (dΦ_E / dt).\nThe Poynting Vector S = (1/μ₀) (E × B) represents the directional energy flux density (watts per square meter) of propagating electromagnetic waves."
+  },
+  {
+    "id": "JEE-03",
+    "code": "JEE-03",
+    "title": "Chemical Kinetics & Arrhenius Activation Energy: Order, Molecularity & Steady State",
+    "section": "jee",
+    "topic": "Chemistry",
+    "categoryName": "Physical Chemistry",
+    "difficulty": "Intermediate",
+    "wordCount": 490,
+    "coreConcept": "Integrated rate laws, half-life formulas (t_1/2 = ln 2 / k for 1st order), and Arrhenius equation: k = A e^(-E_a / RT).",
+    "syllabus": "JEE Chemistry: Chemical Kinetics",
+    "content": "1. Integrated Rate Laws:\n- Zero Order (Rate = k): [A]_t = [A]_0 - k t; Half-life t_1/2 = [A]_0 / (2k) (depends directly on initial concentration).\n- First Order (Rate = k[A]): ln([A]_t / [A]_0) = -k t; Half-life t_1/2 = (ln 2) / k ≈ 0.693 / k (independent of initial concentration).\n- Second Order (Rate = k[A]²): 1/[A]_t - 1/[A]_0 = k t; Half-life t_1/2 = 1 / (k [A]_0).\n\n2. Temperature Dependence (Arrhenius Equation):\nk = A exp(-E_a / (R T)), where A is the pre-exponential frequency factor and E_a is the activation energy.\nLogarithmic Form: ln(k₂ / k₁) = (E_a / R) × [(T₂ - T₁) / (T₁ T₂)].\nA catalyst provides an alternative reaction pathway with lower activation energy (E_a'), accelerating both forward and reverse reaction rates equally without shifting equilibrium."
+  },
+  {
+    "id": "JEE-04",
+    "code": "JEE-04",
+    "title": "Advanced Calculus: Definite Integrals as Limits of Sums & Leibniz Differentiation Rule",
+    "section": "jee",
+    "topic": "Mathematics",
+    "categoryName": "Integral Calculus",
+    "difficulty": "Advanced",
+    "wordCount": 480,
+    "coreConcept": "Newton-Leibniz formula for differentiation under the integral sign and Riemann sum conversions.",
+    "syllabus": "JEE Advanced Mathematics: Integral Calculus",
+    "content": "1. Leibniz Rule of Differentiation Under the Integral Sign:\nIf F(x) = ∫_{u(x)}^{v(x)} f(x, t) dt, then:\ndF/dx = f(x, v(x)) · v'(x) - f(x, u(x)) · u'(x) + ∫_{u(x)}^{v(x)} [∂f(x, t) / ∂x] dt.\nThis rule is vital for solving differential equations and evaluating integrals with variable limits.\n\n2. Definite Integral as Limit of a Riemann Sum:\nlim_{n → ∞} Σ_{r=1}^{n} (1/n) f(r/n) = ∫₀¹ f(x) dx.\nConversion Protocol:\n- Replace r/n with x.\n- Replace 1/n with dx.\n- Limits of integration: Lower limit = lim_{n→∞} (r_min / n), Upper limit = lim_{n→∞} (r_max / n).\n\n3. King's Property (Definite Integral Symmetry):\n∫_a^b f(x) dx = ∫_a^b f(a + b - x) dx.\nIf f(x) + f(a + b - x) = C (constant), then I = ½ C (b - a)."
+  },
+  {
+    "id": "JEE-05",
+    "code": "JEE-05",
+    "title": "Coordination Chemistry & Crystal Field Theory (CFT): d-Orbital Splitting & Isomerism",
+    "section": "jee",
+    "topic": "Chemistry",
+    "categoryName": "Inorganic Chemistry",
+    "difficulty": "Advanced",
+    "wordCount": 500,
+    "coreConcept": "Octahedral (Δ_o) vs Tetrahedral (Δ_t = 4/9 Δ_o) crystal field splitting, Spectrochemical series, and CFSE calculation.",
+    "syllabus": "JEE Chemistry: Coordination Compounds",
+    "content": "1. Crystal Field Splitting in Octahedral Complexes:\nUnder the electrostatic field of 6 ligands approaching along Cartesian axes, the five degenerate d-orbitals split into two sets:\n- e_g set (d_x²-y², d_z²): Higher energy (+0.6 Δ_o) due to direct axial repulsion.\n- t_2g set (d_xy, d_yz, d_xz): Lower energy (-0.4 Δ_o) lying between Cartesian axes.\n\n2. Crystal Field Stabilization Energy (CFSE):\nCFSE = [-0.4 n(t_2g) + 0.6 n(e_g)] Δ_o + m P, where P is the pairing energy.\n- Strong Field Ligands (CN⁻, CO, en): Δ_o > P → Low-spin complexes (electrons pair in t_2g before occupying e_g).\n- Weak Field Ligands (I⁻, Br⁻, F⁻, H₂O): Δ_o < P → High-spin complexes (Hund's rule followed).\n\n3. Magnetic Moments:\nSpin-only magnetic moment μ = √(n(n + 2)) Bohr Magnetons (BM), where n is the count of unpaired d-electrons."
+  }
+];
+
+const satArticles = [
+  {
+    "id": "SAT-01",
+    "code": "SAT-01",
+    "title": "Digital SAT Reading & Writing: Craft and Structure & Transition Word Mastery",
+    "section": "sat",
+    "topic": "Reading & Writing",
+    "categoryName": "SAT Verbal",
+    "difficulty": "Intermediate",
+    "wordCount": 510,
+    "coreConcept": "Mastering logical connectors across Contrast (However, Nonetheless), Cause/Effect (Consequently, Hence), and Addition (Furthermore).",
+    "syllabus": "Digital SAT Reading and Writing: Expression of Ideas",
+    "content": "1. The 3 Fundamental Categories of Transition Words:\nThe Digital SAT heavily tests transitions between sentences. To identify the correct transition:\nStep 1: Read the first sentence and summarize its core claim in 3 words.\nStep 2: Read the second sentence and identify whether it continues, contradicts, or explains the first.\n\n- Contrast / Concession: However, Nevertheless, Conversely, Nonetheless, On the contrary, By contrast.\n- Cause and Effect: Consequently, Therefore, Hence, Thus, Accordingly, As a result.\n- Addition / Elaboration: Furthermore, Moreover, In addition, In fact, Indeed, Specifically.\n\n2. Eliminating Synonymous Answer Traps:\nIf two answer choices belong to the exact same category and have identical meaning (e.g., Choice A: \"Furthermore\", Choice B: \"Moreover\"), BOTH must be incorrect! Look for the distinct relationship."
+  },
+  {
+    "id": "SAT-02",
+    "code": "SAT-02",
+    "title": "Digital SAT Math: Quadratic Equations, Vertex Form & Discriminant Analysis",
+    "section": "sat",
+    "topic": "Math",
+    "categoryName": "SAT Math",
+    "difficulty": "Intermediate",
+    "wordCount": 490,
+    "coreConcept": "Parabola vertex coordinates (-b/2a, f(-b/2a)), vertex form y = a(x - h)² + k, and discriminant Δ = b² - 4ac solutions.",
+    "syllabus": "Digital SAT Math: Passport to Advanced Math",
+    "content": "1. The Three Forms of Quadratic Functions:\n- Standard Form: y = a x² + b x + c (y-intercept is (0, c)). Axis of symmetry is x = -b / (2a).\n- Factored / Intercept Form: y = a (x - r₁) (x - r₂) (x-intercepts are r₁ and r₂). The vertex x-coordinate lies midway at (r₁ + r₂) / 2.\n- Vertex Form: y = a (x - h)² + k (Vertex is (h, k)). If a > 0, the parabola opens upward with minimum value k; if a < 0, it opens downward with maximum value k.\n\n2. Discriminant Rules (Δ = b² - 4ac):\nFor quadratic equation a x² + b x + c = 0:\n- Δ > 0: Exactly two distinct real solutions (parabola intersects x-axis twice).\n- Δ = 0: Exactly one real solution / repeated root (parabola is tangent to x-axis at vertex).\n- Δ < 0: No real solutions (two complex solutions; parabola never crosses x-axis).\n\n3. Desmos Calculator Strategy:\nGraph the equation directly in the built-in Desmos graphing calculator to visually find intersections and minimum/maximum points in seconds."
+  },
+  {
+    "id": "SAT-03",
+    "code": "SAT-03",
+    "title": "Digital SAT Writing: Standard English Conventions (Punctuation & Comma Splices)",
+    "section": "sat",
+    "topic": "Reading & Writing",
+    "categoryName": "SAT Grammar",
+    "difficulty": "Intermediate",
+    "wordCount": 480,
+    "coreConcept": "Connecting independent clauses with semicolons, FANBOYS conjunctions, and avoiding comma splices.",
+    "syllabus": "Digital SAT: Standard English Conventions",
+    "content": "1. Independent Clauses & Sentence Boundaries:\nAn independent clause contains a subject and a verb and can stand alone as a complete thought.\n- Rule: Two independent clauses CANNOT be joined by a comma alone (Comma Splice Error).\n\n2. Valid Methods to Connect Two Independent Clauses:\n(1) Period: [Clause 1]. [Clause 2].\n(2) Semicolon: [Clause 1]; [Clause 2].\n(3) Comma + FANBOYS: [Clause 1], for/and/nor/but/or/yet/so [Clause 2].\n(4) Colon / Em-Dash: [Clause 1]: [Explanation / List].\n\n3. Non-Essential Clauses (Parenthetical Elements):\nClauses that provide extra, non-essential description must be set off by matching punctuation on both sides:\n- Two commas: \"Dr. Chen, who discovered the fossil, published her paper.\"\n- Two em-dashes: \"The expedition—despite severe blizzards—reached the summit.\"\n- Two parentheses: \"The ancient text (translated in 1920) is preserved in Rome.\""
+  },
+  {
+    "id": "SAT-04",
+    "code": "SAT-04",
+    "title": "Digital SAT Math: Exponential Growth, Compound Interest & Percentage Models",
+    "section": "sat",
+    "topic": "Math",
+    "categoryName": "SAT Math",
+    "difficulty": "Intermediate",
+    "wordCount": 470,
+    "coreConcept": "Exponential model f(t) = a(1 ± r)^t, continuous decay half-lives, and compound interest formulas.",
+    "syllabus": "Digital SAT Math: Problem Solving and Data Analysis",
+    "content": "1. The Exponential Growth & Decay Blueprint:\nf(t) = a · (1 ± r)^t, or f(t) = a · b^t:\n- a = Initial starting value at t = 0 (y-intercept).\n- r = Growth rate (expressed as decimal).\n- b = (1 + r) for growth (b > 1); b = (1 - r) for decay (0 < b < 1).\n\n2. Key SAT Trap (Percent Increase vs Factor):\n- \"Increases by 35% every year\": Growth factor is 1 + 0.35 = 1.35 → f(t) = a (1.35)^t.\n- \"Increases by a factor of 4 every 3 years\": f(t) = a · 4^(t / 3).\n- \"Decreases by 20% every month\": Decay factor is 1 - 0.20 = 0.80 → f(t) = a (0.80)^t.\n\n3. Compound Interest Formula:\nA = P (1 + r/n)^(n t), where P is principal, r is annual interest rate, n is compounding frequency per year (n = 12 for monthly, n = 4 for quarterly), and t is time in years."
   }
 ];
 
@@ -296,6 +490,9 @@ const toeflArticles = [
 
 module.exports = {
   generalStudentArticles,
+  neetArticles,
+  jeeArticles,
+  satArticles,
   ieltsArticles,
   toeflArticles
 };

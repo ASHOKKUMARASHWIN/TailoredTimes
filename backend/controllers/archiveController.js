@@ -1,16 +1,35 @@
 const caArticles = require('../data/caArticles');
-const { generalStudentArticles, ieltsArticles, toeflArticles } = require('../data/examArticles');
+const { 
+  generalStudentArticles, 
+  neetArticles, 
+  jeeArticles, 
+  satArticles, 
+  ieltsArticles, 
+  toeflArticles 
+} = require('../data/examArticles');
 const rssFetcher = require('../services/rssFetcher');
 
 const archiveSectionsConfig = {
   ca: { 
-    title: 'Chartered Accountancy — 50 High-Yield Study Articles (2026 Edition)',
+    title: 'Chartered Accountancy — 60+ High-Yield Study Articles (2026 Edition)',
     subsections: ['foundation', 'intermediate', 'final'], 
-    topics: ['Auditing & Assurance', 'Taxation', 'Corporate Law', 'Accounting Standards (Ind AS)', 'Strategic Financial Management', 'Exam Preparation & Career'] 
+    topics: ['All Topics', 'Auditing & Assurance', 'Taxation', 'Corporate Law', 'Accounting Standards (Ind AS)', 'Strategic Financial Management', 'Exam Preparation & Career'] 
   },
   students: {
     title: 'General Students Learning & Academic Archive',
     topics: ['All Topics', 'Education', 'Science', 'Technology', 'Current Affairs', 'Career', 'Economics']
+  },
+  neet: {
+    title: 'NEET Medical Entrance Exam Archive (Biology, Chemistry, Physics)',
+    topics: ['All Topics', 'Biology', 'Chemistry', 'Physics', 'Genetics', 'Human Physiology', 'Biomolecules']
+  },
+  jee: {
+    title: 'JEE Engineering Entrance Exam Archive (Physics, Chemistry, Mathematics)',
+    topics: ['All Topics', 'Physics', 'Chemistry', 'Mathematics', 'Mechanics', 'Calculus', 'Electrodynamics']
+  },
+  sat: {
+    title: 'Digital SAT Exam Prep Archive (Reading, Writing & Math)',
+    topics: ['All Topics', 'Reading & Writing', 'Math', 'Grammar', 'Algebra', 'Advanced Math']
   },
   ielts: {
     title: 'IELTS Prep Exam & Vocabulary Archive',
@@ -44,6 +63,12 @@ const getArchiveArticles = async (req, res) => {
       curatedPool = caArticles;
     } else if (section === 'students') {
       curatedPool = generalStudentArticles;
+    } else if (section === 'neet') {
+      curatedPool = neetArticles || [];
+    } else if (section === 'jee') {
+      curatedPool = jeeArticles || [];
+    } else if (section === 'sat') {
+      curatedPool = satArticles || [];
     } else if (section === 'ielts') {
       curatedPool = ieltsArticles;
     } else if (section === 'toefl') {

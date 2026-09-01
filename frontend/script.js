@@ -153,6 +153,9 @@ const PROFESSIONS = [
 const FORMATS = [
   { id: '1min', title: '1-minute reads (Quick Takeaways)', emoji: '⚡', desc: '3 fast key takeaway bullets per story' },
   { id: 'summaries', title: 'Executive Summaries', emoji: '📝', desc: 'Key points, data figures & highlights' },
+  { id: 'neet', title: 'NEET Medical Entrance Prep', emoji: '🩺', desc: 'Biology & Medical GK, Physiology, Formulas & MCQs' },
+  { id: 'jee', title: 'JEE Engineering Entrance Prep', emoji: '⚛️', desc: 'Physics, Chemistry, Calculus & Numerical MCQs' },
+  { id: 'sat', title: 'Digital SAT Prep', emoji: '📐', desc: 'Reading & Writing, Grammar, Math & Practice MCQs' },
   { id: 'clat', title: 'CLAT Legal & Current Affairs', emoji: '⚖️', desc: 'Legal GK, landmark rulings, acts & practice MCQs' },
   { id: 'ca', title: 'CA Financial & Policy Prep', emoji: '📊', desc: 'Fiscal policy, taxation, RBI/SEBI & audit notes' },
   { id: 'ielts', title: 'IELTS Band 8+ Prep', emoji: '🇬🇧', desc: 'Band 8+ vocab, grammar & essay prompts' },
@@ -976,6 +979,9 @@ function renderFeedFormatPills() {
   const displayFormats = [
     { id: '1min', title: '1-Min Reads', emoji: '⚡' },
     { id: 'summaries', title: 'Summaries', emoji: '📝' },
+    { id: 'neet', title: 'NEET Prep', emoji: '🩺' },
+    { id: 'jee', title: 'JEE Prep', emoji: '⚛️' },
+    { id: 'sat', title: 'SAT Prep', emoji: '📐' },
     { id: 'clat', title: 'CLAT Prep', emoji: '⚖️' },
     { id: 'ca', title: 'CA Prep', emoji: '📊' },
     { id: 'ielts', title: 'IELTS Prep', emoji: '🇬🇧' },
@@ -1237,6 +1243,116 @@ function generateStudyInsights(article, format) {
         ],
         correctOption: 'A',
         explanation: `Option A is correct: In TOEFL academic discourse, contemporary global events are integrated as empirical case studies to substantiate theoretical models.`
+      }
+    };
+  }
+
+  // 5. NEET Medical Entrance Exam Engine
+  if (format === 'neet') {
+    const neetTopics = [
+      { concept: 'Molecular Genetics & Central Dogma', formula: 'Chargaff\'s Rule: [A] + [G] = [T] + [C]; Semi-conservative 5\'→3\' DNA synthesis' },
+      { concept: 'Human Cardiovascular & Endocrine Physiology', formula: 'Cardiac Output = Stroke Volume (70 mL) × Heart Rate (72 bpm) ≈ 5.0 L/min' },
+      { concept: 'Chemical Energetics & Thermodynamics', formula: 'Gibbs Free Energy: ΔG° = ΔH° - TΔS°; Spontaneity criterion ΔG < 0' },
+      { concept: 'Biomolecules & Enzyme Catalysis', formula: 'Michaelis-Menten Kinetics: v = (V_max [S]) / (K_m + [S])' },
+      { concept: 'Ray & Wave Optics Principles', formula: 'Lens Maker\'s Formula: 1/f = (μ - 1)(1/R₁ - 1/R₂)' }
+    ];
+    const pickedNeet = neetTopics[Math.abs(hashString(title)) % neetTopics.length];
+
+    return {
+      examType: 'NEET',
+      badge: '🩺 NEET MEDICAL ENTRANCE PREP',
+      syllabusTag: 'Biology (Genetics & Physiology) & Applied Medical Sciences',
+      buttonLabel: '🩺 NEET Study Notes & MCQ',
+      preview: `<strong>Concept Focus:</strong> ${pickedNeet.concept} &bull; <strong>Formula:</strong> ${pickedNeet.formula}`,
+      bullets: [
+        `<strong>High-Yield Concept:</strong> ${pickedNeet.concept}`,
+        `<strong>Core Formula / Rule:</strong> <code>${pickedNeet.formula}</code>`,
+        `<strong>Medical & Biological Takeaway:</strong> Analyze how cellular, biochemical, and environmental factors influence biological equilibrium and homeostatic regulation.`,
+        `<strong>Exam Focus Area:</strong> NCERT Class 11 & 12 direct high-frequency question patterns.`
+      ],
+      mcq: {
+        question: `NEET Biology & Medical Sciences: In the context of biological systems and "${cleanText(title).substring(0, 75)}...", which of the following statements is scientifically ACCURATE?`,
+        options: [
+          `A. Enzyme reaction rates increase with substrate concentration until all catalytic active sites reach saturation (V_max).`,
+          `B. DNA Polymerase III synthesizes continuous strands strictly in the 3' to 5' direction without RNA primers.`,
+          `C. Cardiac output decreases proportionally during strenuous muscular physical exertion.`,
+          `D. All spontaneous biochemical reactions occur with positive Gibbs free energy (+ΔG).`
+        ],
+        correctOption: 'A',
+        explanation: `Option A is correct: In Michaelis-Menten enzyme kinetics, when all enzyme active sites are occupied by substrate, the reaction reaches maximum velocity (V_max) and exhibits zero-order kinetics.`
+      }
+    };
+  }
+
+  // 6. JEE Engineering Entrance Exam Engine
+  if (format === 'jee') {
+    const jeeTopics = [
+      { concept: 'Rotational Dynamics & Moment of Inertia', formula: 'Parallel Axis Theorem: I = I_cm + M d²; Torque τ = I α = dL/dt' },
+      { concept: 'Electrodynamics & Magnetic Flux Induction', formula: 'Faraday-Lenz Law: ε = -dΦ_B / dt; Induced Motional EMF ε = B v L' },
+      { concept: 'Integral Calculus & Differential Equations', formula: 'Leibniz Rule: d/dx [∫_{u(x)}^{v(x)} f(t) dt] = f(v(x)) v\'(x) - f(u(x)) u\'(x)' },
+      { concept: 'Physical Chemistry & Chemical Kinetics', formula: 'Arrhenius Rate Law: k = A e^(-E_a / RT); 1st order t_1/2 = ln(2) / k' },
+      { concept: 'Quantum Mechanics & Modern Physics', formula: 'De Broglie Wavelength: λ = h / p = h / √(2mE_k); Photoelectric equation E = hν - Φ' }
+    ];
+    const pickedJee = jeeTopics[Math.abs(hashString(title)) % jeeTopics.length];
+
+    return {
+      examType: 'JEE',
+      badge: '⚛️ JEE ADVANCED ENGINEERING PREP',
+      syllabusTag: 'Physics, Chemistry & Applied Engineering Mathematics',
+      buttonLabel: '⚛️ JEE Concepts & Numerical MCQ',
+      preview: `<strong>Engineering Focus:</strong> ${pickedJee.concept} &bull; <strong>Core Equation:</strong> ${pickedJee.formula}`,
+      bullets: [
+        `<strong>Advanced Principle:</strong> ${pickedJee.concept}`,
+        `<strong>Governing Equation:</strong> <code>${pickedJee.formula}</code>`,
+        `<strong>Analytical Problem Strategy:</strong> Isolate free body diagrams, conserve fundamental quantities (Energy, Momentum, Charge), and check dimensional consistency.`,
+        `<strong>Exam Target:</strong> JEE Main & Advanced multi-concept numerical problems.`
+      ],
+      mcq: {
+        question: `JEE Physics & Applied Mathematics: Regarding "${cleanText(title).substring(0, 75)}..." and fundamental physical principles, which conclusion is rigorously valid?`,
+        options: [
+          `A. For a rigid body rolling without slipping on an inclined plane, the linear acceleration of the center of mass is a_cm = (g sin θ) / (1 + k²/R²).`,
+          `B. Total momentum is never conserved in isolated systems with internal non-conservative forces.`,
+          `C. The half-life of a first-order chemical reaction is directly proportional to initial reactant concentration.`,
+          `D. Electric field inside a charged solid conducting sphere in electrostatic equilibrium is non-zero.`
+        ],
+        correctOption: 'A',
+        explanation: `Option A is correct: By applying torque τ = I_cm α and friction f = μN, pure rolling down an incline yields linear acceleration a_cm = (g sin θ) / (1 + k²/R²), where k is the radius of gyration.`
+      }
+    };
+  }
+
+  // 7. Digital SAT Prep Engine
+  if (format === 'sat') {
+    const satTopics = [
+      { concept: 'Transitions & Logical Connectors', rule: 'Contrast (However, Nonetheless) vs Cause/Effect (Therefore, Hence) vs Addition (Moreover)' },
+      { concept: 'Standard English Conventions (Punctuation)', rule: 'Connect two independent clauses with: [Period], [Semicolon], or [Comma + FANBOYS]' },
+      { concept: 'Algebra & Quadratic Vertex Form', rule: 'Parabola vertex (h, k) with axis of symmetry x = -b / (2a); Discriminant Δ = b² - 4ac' },
+      { concept: 'Exponential Models & Percentage Growth', rule: 'f(t) = a(1 + r)^t for growth; Compound Interest A = P(1 + r/n)^(nt)' }
+    ];
+    const pickedSat = satTopics[Math.abs(hashString(title)) % satTopics.length];
+
+    return {
+      examType: 'SAT',
+      badge: '📐 DIGITAL SAT STRATEGY & SKILLS',
+      syllabusTag: 'Digital SAT Reading & Writing + SAT Math Mastery',
+      buttonLabel: '📐 SAT Practice Question & Tips',
+      preview: `<strong>Skill Tested:</strong> ${pickedSat.concept} &bull; <strong>Rule:</strong> ${pickedSat.rule}`,
+      bullets: [
+        `<strong>SAT Skill Focus:</strong> ${pickedSat.concept}`,
+        `<strong>Key SAT Rule / Blueprint:</strong> <code>${pickedSat.rule}</code>`,
+        `<strong>Desmos & Timing Strategy:</strong> Eliminate answer choices with redundant meaning; verify algebraic solutions graphically in under 45 seconds.`,
+        `<strong>Section Focus:</strong> Digital SAT 800-Level Hard Module Preparation.`
+      ],
+      mcq: {
+        question: `Digital SAT Standard English Conventions: Which choice completes the text with the most grammatically correct punctuation? "The international summit produced groundbreaking environmental treaties [_____] member nations pledged $50 billion toward green infrastructure."`,
+        options: [
+          `A. ; furthermore,`,
+          `B. , furthermore`,
+          `C. furthermore`,
+          `D. ; but`
+        ],
+        correctOption: 'A',
+        explanation: `Option A is correct: Both clauses are independent. To connect them using a transitional adverb ('furthermore'), you must precede it with a semicolon (or period) and follow it with a comma.`
       }
     };
   }
