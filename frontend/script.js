@@ -2673,12 +2673,32 @@ function clearAIChat() {
   const container = document.getElementById('ai-messages-container');
   if (container) {
     container.innerHTML = `
-      <div class="ai-message ai-msg-bot">
-        <div class="msg-bubble">
-          <p>🧹 <strong>Chat Cleared.</strong></p>
-          <p>Hi! I'm <strong>Tyla</strong>. Ask me any question, solve a math problem, or start a new topic!</p>
+      <div class="ai-welcome-hero">
+        <div class="ai-hero-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Universal AI Intelligence</div>
+        <h2 class="ai-hero-title">Hello! What would you like to master today?</h2>
+        <p class="ai-hero-subtitle">Ask questions, debug code, analyze global news, derive formulas, or test your memory.</p>
+        <div class="ai-hero-cards-grid">
+          <div class="ai-hero-card" onclick="sendQuickPrompt('Explain quantum physics with a fun real-world analogy')">
+            <div class="hero-card-icon">💡</div>
+            <div class="hero-card-title">Explain Simply</div>
+            <div class="hero-card-desc">Break down complex ideas with intuitive analogies</div>
+          </div>
+          <div class="ai-hero-card" onclick="sendQuickPrompt('Give me a 3-question challenging practice quiz with score tracking')">
+            <div class="hero-card-icon">🎯</div>
+            <div class="hero-card-title">Practice Quiz</div>
+            <div class="hero-card-desc">Interactive MCQs with score points and solutions</div>
+          </div>
+          <div class="ai-hero-card" onclick="sendQuickPrompt('Teach me a catchy mnemonic and memory trick for difficult formulas')">
+            <div class="hero-card-icon">🧠</div>
+            <div class="hero-card-title">Memory Hacks</div>
+            <div class="hero-card-desc">Acronyms & mental models for rapid exam recall</div>
+          </div>
+          <div class="ai-hero-card" onclick="sendQuickPrompt('Give me a step-by-step strategy to solve difficult analytical problems')">
+            <div class="hero-card-icon">⚡</div>
+            <div class="hero-card-title">Problem Solver</div>
+            <div class="hero-card-desc">Step-by-step frameworks for math, code & exams</div>
+          </div>
         </div>
-        <span class="msg-time">Tyla • Ready</span>
       </div>
     `;
   }
@@ -2711,6 +2731,10 @@ async function submitAIDoubt() {
   const question = input.value.trim();
   if (!question) return;
 
+  // Remove welcome hero on first message
+  const hero = container.querySelector('.ai-welcome-hero');
+  if (hero) hero.remove();
+
   input.value = '';
   aiState.isProcessing = true;
   if (sendBtn) sendBtn.disabled = true;
@@ -2726,14 +2750,16 @@ async function submitAIDoubt() {
   `;
   container.appendChild(userMsgEl);
 
-  // Append loading bubble
+  // Append thinking bubble
   const loadingEl = document.createElement('div');
   loadingEl.className = 'ai-message ai-msg-bot';
   loadingEl.id = 'ai-typing-indicator';
   loadingEl.innerHTML = `
-    <div class="msg-bubble" style="display: flex; align-items: center; gap: 8px;">
-      <i class="fa-solid fa-spinner fa-spin" style="color: var(--accent);"></i>
-      <span style="font-size: 13px; color: var(--text-muted);">Tyla is formulating answer...</span>
+    <div class="msg-bubble ai-thinking-bubble">
+      <div class="ai-thinking-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <span class="ai-thinking-text">Tyla is thinking...</span>
     </div>
   `;
   container.appendChild(loadingEl);
@@ -2744,7 +2770,7 @@ async function submitAIDoubt() {
       question,
       mode: aiState.mode,
       context: aiState.currentArticleContext,
-      history: aiState.history.slice(-8) // Send recent conversational context
+      history: aiState.history.slice(-8) // Multi-turn conversational memory
     };
 
     const res = await fetch('/api/ai/ask', {
@@ -2762,32 +2788,8 @@ async function submitAIDoubt() {
     aiState.history.push({ role: 'user', content: question });
     aiState.history.push({ role: 'assistant', content: answer });
 
-    // Format response HTML with interactive elements
-    const formattedAnswer = renderMarkdownToHTML(answer);
-
-    const botMsgEl = document.createElement('div');
-    botMsgEl.className = 'ai-message ai-msg-bot';
-    
-    // Generate contextual dynamic follow-up chips
-    const followUpChips = getDynamicFollowUpChips(question, aiState.mode);
-
-    botMsgEl.innerHTML = `
-      <div class="msg-bubble">
-        ${formattedAnswer}
-        <div class="msg-interactive-toolbar">
-          <button class="btn-interactive-action" onclick="copyAIText(this)"><i class="fa-regular fa-copy"></i> Copy Solution</button>
-          <button class="btn-interactive-action" onclick="toggleTylaSpeech(this)"><i class="fa-solid fa-volume-high"></i> Listen to Tyla</button>
-        </div>
-      </div>
-      <div class="msg-follow-ups">
-        <span class="follow-up-label">Suggested by Tyla:</span>
-        <div class="follow-up-pills">
-          ${followUpChips.map(chip => `<button class="follow-up-pill" onclick="sendQuickPrompt('${chip.prompt.replace(/'/g, "\\'")}')">${chip.label}</button>`).join('')}
-        </div>
-      </div>
-      <span class="msg-time">Tyla ✦ AI Tutor</span>
-    `;
-    container.appendChild(botMsgEl);
+    // Stream typewriter response into UI
+    await streamTypewriterResponse(container, answer, question);
 
   } catch (error) {
     loadingEl.remove();
@@ -2795,8 +2797,8 @@ async function submitAIDoubt() {
     errEl.className = 'ai-message ai-msg-bot';
     errEl.innerHTML = `
       <div class="msg-bubble" style="border-left: 3px solid var(--accent-red);">
-        <p style="color: var(--accent-red); font-weight: 700;">⚠️ Tyla could not fetch the answer right now.</p>
-        <p style="font-size: 13px;">Please check your connection or try re-asking your doubt.</p>
+        <p style="color: var(--accent-red); font-weight: 700;">⚠️ Tyla encountered a connection delay.</p>
+        <p style="font-size: 13px;">Please try sending your message again.</p>
       </div>
     `;
     container.appendChild(errEl);
@@ -2807,16 +2809,93 @@ async function submitAIDoubt() {
   }
 }
 
+// Token-Stream Typewriter Renderer (ChatGPT & Gemini style)
+async function streamTypewriterResponse(container, rawMarkdown, userQuestion) {
+  const botMsgEl = document.createElement('div');
+  botMsgEl.className = 'ai-message ai-msg-bot';
+
+  const bubbleEl = document.createElement('div');
+  bubbleEl.className = 'msg-bubble';
+  botMsgEl.appendChild(bubbleEl);
+
+  const timeEl = document.createElement('span');
+  timeEl.className = 'msg-time';
+  timeEl.innerHTML = 'Tyla ✦ AI Tutor';
+  botMsgEl.appendChild(timeEl);
+
+  container.appendChild(botMsgEl);
+
+  // Fast typewriter animation
+  const chunkSize = Math.max(8, Math.floor(rawMarkdown.length / 30));
+  let currentPos = 0;
+
+  await new Promise((resolve) => {
+    const timer = setInterval(() => {
+      currentPos = Math.min(rawMarkdown.length, currentPos + chunkSize);
+      const partialText = rawMarkdown.substring(0, currentPos);
+      bubbleEl.innerHTML = renderMarkdownToHTML(partialText) + '<span class="typing-cursor">▌</span>';
+      container.scrollTop = container.scrollHeight;
+
+      if (currentPos >= rawMarkdown.length) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, 18);
+  });
+
+  // Final render with interactive widgets
+  const finalHtml = renderMarkdownToHTML(rawMarkdown);
+  const followUpChips = getDynamicFollowUpChips(userQuestion, aiState.mode);
+
+  bubbleEl.innerHTML = `
+    ${finalHtml}
+    <div class="msg-interactive-toolbar">
+      <button class="btn-interactive-action" onclick="copyAIText(this)" title="Copy entire response"><i class="fa-regular fa-copy"></i> Copy</button>
+      <button class="btn-interactive-action" onclick="toggleTylaSpeech(this)" title="Read response aloud"><i class="fa-solid fa-volume-high"></i> Speak</button>
+      <button class="btn-interactive-action reaction-btn" onclick="rateMessage(this, 'up')" title="Helpful"><i class="fa-regular fa-thumbs-up"></i></button>
+      <button class="btn-interactive-action reaction-btn" onclick="rateMessage(this, 'down')" title="Not helpful"><i class="fa-regular fa-thumbs-down"></i></button>
+    </div>
+  `;
+
+  // Append dynamic suggestion chips
+  const followUpsEl = document.createElement('div');
+  followUpsEl.className = 'msg-follow-ups';
+  followUpsEl.innerHTML = `
+    <span class="follow-up-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggested Follow-Ups:</span>
+    <div class="follow-up-pills">
+      ${followUpChips.map(chip => `<button class="follow-up-pill" onclick="sendQuickPrompt('${chip.prompt.replace(/'/g, "\\'")}')">${chip.label}</button>`).join('')}
+    </div>
+  `;
+  botMsgEl.insertBefore(followUpsEl, timeEl);
+  container.scrollTop = container.scrollHeight;
+}
+
+window.rateMessage = function(btn, type) {
+  btn.style.color = type === 'up' ? 'var(--accent-green)' : 'var(--accent-red)';
+  btn.innerHTML = type === 'up' ? '<i class="fa-solid fa-thumbs-up"></i>' : '<i class="fa-solid fa-thumbs-down"></i>';
+  showToast(type === 'up' ? 'Thanks for the feedback! 🌟' : 'Feedback recorded. Tyla will improve! 👍', 'info');
+};
+
+window.copyCodeBlock = function(btn) {
+  const codeEl = btn.closest('.ai-code-wrapper')?.querySelector('code');
+  if (codeEl) {
+    navigator.clipboard.writeText(codeEl.innerText);
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+    showToast('Code copied to clipboard! 📋', 'success');
+  }
+};
+
 function getDynamicFollowUpChips(userQ, mode) {
   const norm = userQ.toLowerCase().trim();
   
-  // Greeting or small talk
   if (['hi', 'hello', 'hey', 'good morning', 'how are you', 'sup', "what's up", 'who are you'].some(g => norm.includes(g))) {
     return [
       { label: '💡 Explain a concept with an analogy', prompt: 'Explain a complex academic concept with a fun real-world analogy.' },
-      { label: '🎯 Test me on a quick quiz', prompt: 'Give me a 3-question general academic practice quiz.' },
+      { label: '🎯 Test me on a quick quiz', prompt: 'Give me a 3-question practice quiz with score points.' },
       { label: '🧠 Teach me a memory trick', prompt: 'What is a great mnemonic or memory hook technique for studying?' },
-      { label: '✨ Help me prepare for my exam', prompt: 'What are your top 5 high-score exam study strategies?' }
+      { label: '✨ Help me prepare for exams', prompt: 'What are your top 5 high-score exam study strategies?' }
     ];
   }
 
@@ -2828,16 +2907,9 @@ function getDynamicFollowUpChips(userQ, mode) {
       { label: '💡 Real-world case study', prompt: 'Show me a real-world case study or practical application of this.' }
     ];
   }
-  if (norm.includes('formula') || norm.includes('cheat sheet') || mode === 'formulas') {
-    return [
-      { label: '🎯 Test me on these formulas', prompt: 'Test me with 3 calculation-based practice questions using these formulas.' },
-      { label: '⚠️ What mistakes happen in exams?', prompt: 'What are the common exam calculation mistakes and traps students make here?' },
-      { label: '💡 Step-by-step derivation', prompt: 'Show the step-by-step derivation of the primary equation.' }
-    ];
-  }
   return [
     { label: '💡 Explain with simple analogy', prompt: 'Can you explain this with an ultra-simple real-world analogy?' },
-    { label: '🎯 Test me with 3 MCQs', prompt: 'Give me 3 high-yield practice MCQs with detailed explanations on this topic.' },
+    { label: '🎯 Test me with 3 MCQs', prompt: 'Give me 3 high-yield practice MCQs with interactive options on this topic.' },
     { label: '🧠 Create a mnemonic', prompt: 'Give me a catchy mnemonic or memory trick to remember this easily.' },
     { label: '📋 Formula cheat sheet', prompt: 'Give me the quick formula sheet and core rules for this topic.' },
     { label: '⚠️ Common exam traps', prompt: 'What are the most common exam traps and mistakes students make on this?' }
@@ -2854,21 +2926,31 @@ function renderMarkdownToHTML(md) {
   if (!md) return '';
   let html = escapeHTML(md);
 
+  // Code Blocks with Copy Header (like ChatGPT & Gemini)
+  html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/gim, (match, lang, code) => {
+    const langLabel = (lang || 'CODE').toUpperCase();
+    return `<div class="ai-code-wrapper">
+      <div class="ai-code-header">
+        <span class="ai-code-lang">${langLabel}</span>
+        <button class="ai-code-copy-btn" onclick="copyCodeBlock(this)"><i class="fa-regular fa-copy"></i> Copy Code</button>
+      </div>
+      <pre class="ai-code-pre"><code>${code}</code></pre>
+    </div>`;
+  });
+
   // Bold
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   // Italic
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
   // Headers
-  html = html.replace(/^### (.*$)/gim, '<h3 style="color: var(--accent); margin: 10px 0 6px 0; font-size: 15px; font-weight: 800;">$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2 style="color: var(--accent); margin: 12px 0 8px 0; font-size: 16px; font-weight: 800;">$1</h2>');
+  html = html.replace(/^### (.*$)/gim, '<h3 class="ai-header-3">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 class="ai-header-2">$1</h2>');
   // Blockquotes
   html = html.replace(/^> (.*$)/gim, '<blockquote class="ai-blockquote">$1</blockquote>');
-  // Code Blocks
-  html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, '<pre class="ai-code-block"><code>$2</code></pre>');
   // Inline Code
   html = html.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>');
   
-  // Interactive MCQ Options Detection: converts - **A)** ... ✅ into interactive buttons!
+  // Interactive MCQ Options: converts - **A)** ... ✅ into clickable interactive quiz buttons!
   html = html.replace(/^[•\-\*] <strong>([A-D]\))<\/strong> (.*?)(?: (✅))?$/gim, (match, optLetter, optText, isCorrect) => {
     const correctFlag = isCorrect ? 'true' : 'false';
     const cleanText = optText.replace('✅', '').trim();
