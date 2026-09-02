@@ -1494,9 +1494,11 @@ function renderArticles(articles, append = false) {
       }
     }
 
+    const svgFallback = getCategorySvgPlaceholder(article.category, cleanTitle);
+
     card.innerHTML = `
       <div class="card-image">
-        <img src="${imgUrl}" alt="${cleanTitle}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackPhoto}';">
+        <img src="${imgUrl}" alt="${cleanTitle}" loading="lazy" onerror="if(this.src!=='${fallbackPhoto}'){this.src='${fallbackPhoto}';}else{this.onerror=null;this.src='${svgFallback}';}">
       </div>
       <div class="card-body">
         <div class="card-meta">
@@ -1690,6 +1692,22 @@ const UNSPLASH_POOLS = {
   ]
 };
 
+function getCategorySvgPlaceholder(category, title) {
+  const cat = (category || 'NEWS').toUpperCase();
+  const bgColors = {
+    TECHNOLOGY: ['#0066ff', '#7928ca'],
+    BUSINESS: ['#00b4d8', '#0077b6'],
+    SCIENCE: ['#7209b7', '#3a0ca3'],
+    SPORTS: ['#e63946', '#f77f00'],
+    EDUCATION: ['#2a9d8f', '#264653'],
+    WORLD: ['#1a1a2e', '#16213e']
+  };
+  const [c1, c2] = bgColors[cat] || bgColors.WORLD;
+  const safeTitle = (title || 'Global News').replace(/[^a-zA-Z0-9 ]/g, '').slice(0, 30);
+  
+  return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${encodeURIComponent(c1)}"/><stop offset="100%" stop-color="${encodeURIComponent(c2)}"/></linearGradient></defs><rect width="800" height="450" fill="url(%23g)"/><circle cx="400" cy="225" r="160" fill="rgba(255,255,255,0.06)"/><text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="system-ui, sans-serif" font-weight="800" font-size="34" letter-spacing="2">${cat}</text><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui, sans-serif" font-weight="600" font-size="18">${encodeURIComponent(safeTitle)}</text></svg>`;
+}
+
 function getUnsplashEditorialPhoto(article, offset = 0) {
   const cat = (article.category || 'world').toLowerCase();
   const pool = UNSPLASH_POOLS[cat] || UNSPLASH_POOLS['world'];
@@ -1699,7 +1717,7 @@ function getUnsplashEditorialPhoto(article, offset = 0) {
     hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
   }
   const index = Math.abs(hash) % pool.length;
-  return pool[index];
+  return pool[index] || getCategorySvgPlaceholder(article.category, article.title);
 }
 
 function updateLiveStats() {
