@@ -412,6 +412,7 @@ input { font-family: var(--font); outline: none; }
 .sidebar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
 .sidebar-overlay.active { display: block; opacity: 1; }
 .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; z-index: 95; transition: transform 0.3s ease; }
+.sidebar .brand-logo-img, .sidebar-logo-full, .sidebar-brand { display: none !important; }
 .sidebar-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .sidebar-user { display: flex; align-items: center; gap: 12px; }
 .user-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
