@@ -558,6 +558,7 @@
             </div>
             <div class="ai-header-actions">
                 <div class="ai-score-pill" id="tyla-score-pill" title="Interactive Quiz Points"><i class="fa-solid fa-trophy"></i> <span id="tyla-quiz-pts">0</span> pts</div>
+                <button class="ai-action-btn" id="btn-fullscreen-tyla" onclick="toggleFullscreenAIChat()" title="Toggle Full Screen"><i class="fa-solid fa-expand"></i></button>
                 <button class="ai-action-btn" onclick="clearAIChat()" title="Clear Chat"><i class="fa-regular fa-trash-can"></i></button>
                 <button class="ai-action-btn" onclick="toggleAIChat()" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -587,15 +588,16 @@
                 <div class="msg-bubble">
                     <p>👋 <strong>Hey there! I'm Tyla, your personal AI study buddy.</strong></p>
                     <p>Whether you're prepping for exams, solving complex homework, studying accounting, science, math, or languages—I'm here to make learning simple, fun, and crystal clear!</p>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 0;">💬 <em>Ask me any question or tap one of the quick suggestions above to get started!</em></p>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 0;">💬 <em>Ask me any question, dictate by voice, or tap one of the quick suggestions above to get started!</em></p>
                 </div>
                 <span class="msg-time">Tyla • Ready</span>
             </div>
         </div>
 
-        <!-- Chat Input Field -->
+        <!-- Chat Input Field (ChatGPT / Claude / Gemini style) -->
         <div class="ai-chat-input-row">
-            <textarea id="ai-user-input" placeholder="Type your doubt or question here... (e.g. 'Explain Ind AS 116' or 'How does DNA replication work?')" rows="1" onkeydown="handleAIKeyDown(event)"></textarea>
+            <button id="ai-mic-btn" class="ai-mic-btn" onclick="toggleVoiceInput()" title="Speak to Tyla (Voice Input)"><i class="fa-solid fa-microphone"></i></button>
+            <textarea id="ai-user-input" placeholder="Ask Tyla anything... (e.g., 'Help me solve this calculus problem' or 'Explain Ind AS 116')" rows="1" onkeydown="handleAIKeyDown(event)"></textarea>
             <button id="ai-send-btn" class="ai-send-btn" onclick="submitAIDoubt()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
