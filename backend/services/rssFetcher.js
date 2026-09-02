@@ -39,15 +39,15 @@ const COUNTRY_MAP = {
 };
 
 const TOPIC_URLS = {
-  'technology': 'https://news.google.com/rss/search?q=technology+AI+software+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'tech': 'https://news.google.com/rss/search?q=technology+AI+software+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'business': 'https://news.google.com/rss/search?q=business+finance+economy+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'science': 'https://news.google.com/rss/search?q=science+research+space+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'sports': 'https://news.google.com/rss/search?q=sports+football+cricket+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'entertainment': 'https://news.google.com/rss/search?q=entertainment+movies+cinema+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'health': 'https://news.google.com/rss/search?q=health+medicine+healthcare+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'world': 'https://news.google.com/rss/search?q=world+news+global+when:3d&hl=en-US&gl=US&ceid=US:en',
-  'education': 'https://news.google.com/rss/search?q=education+university+students+exams+colleges+when:3d&hl=en-US&gl=US&ceid=US:en'
+  'technology': 'https://news.google.com/rss/search?q=technology+AI+software+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'tech': 'https://news.google.com/rss/search?q=technology+AI+software+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'business': 'https://news.google.com/rss/search?q=business+finance+economy+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'science': 'https://news.google.com/rss/search?q=science+research+space+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'sports': 'https://news.google.com/rss/search?q=sports+football+cricket+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'entertainment': 'https://news.google.com/rss/search?q=entertainment+movies+cinema+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'health': 'https://news.google.com/rss/search?q=health+medicine+healthcare+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'world': 'https://news.google.com/rss/search?q=world+news+global+when:2d&hl=en-US&gl=US&ceid=US:en',
+  'education': 'https://news.google.com/rss/search?q=education+university+students+exams+colleges+when:2d&hl=en-US&gl=US&ceid=US:en'
 };
 
 function cleanHtml(str) {
@@ -236,7 +236,7 @@ const fetchCountryFeed = async (countryCode) => {
   const cached = getCached(cacheKey);
   if (cached) return cached;
 
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(countryName)}+when:3d&hl=en-US&gl=US&ceid=US:en`;
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(countryName)}+when:2d&hl=en-US&gl=US&ceid=US:en`;
   const xml = await fetchWithTimeout(url, 12000);
   if (!xml) return [];
 
