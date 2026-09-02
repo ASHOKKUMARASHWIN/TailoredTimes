@@ -2666,7 +2666,18 @@ async function submitAIDoubt() {
 }
 
 function getDynamicFollowUpChips(userQ, mode) {
-  const norm = userQ.toLowerCase();
+  const norm = userQ.toLowerCase().trim();
+  
+  // Greeting or small talk
+  if (['hi', 'hello', 'hey', 'good morning', 'how are you', 'sup', "what's up", 'who are you'].some(g => norm.includes(g))) {
+    return [
+      { label: '💡 Explain a concept with an analogy', prompt: 'Explain a complex academic concept with a fun real-world analogy.' },
+      { label: '🎯 Test me on a quick quiz', prompt: 'Give me a 3-question general academic practice quiz.' },
+      { label: '🧠 Teach me a memory trick', prompt: 'What is a great mnemonic or memory hook technique for studying?' },
+      { label: '✨ Help me prepare for my exam', prompt: 'What are your top 5 high-score exam study strategies?' }
+    ];
+  }
+
   if (norm.includes('mcq') || norm.includes('quiz') || mode === 'quiz') {
     return [
       { label: '🧮 Give harder MCQs', prompt: 'Give me 3 more advanced high-difficulty practice MCQs on this.' },
