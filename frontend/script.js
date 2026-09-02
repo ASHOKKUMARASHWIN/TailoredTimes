@@ -1850,9 +1850,12 @@ function showArchiveView(rawSection) {
   state.archive.topic = '';
   
   const titles = {
-    'ca': 'CA Students Learning & Exam Archive (50 High-Yield Articles)',
+    'ca': 'CA Students Learning & Exam Archive (60+ High-Yield Articles)',
     'students': 'General Students Learning & Exam Archive',
     'general': 'General Students Learning & Exam Archive',
+    'neet': 'NEET Medical Entrance Exam Archive (Biology, Chemistry, Physics)',
+    'jee': 'JEE Engineering Entrance Exam Archive (Physics, Chemistry, Mathematics)',
+    'sat': 'Digital SAT Prep Exam Archive (Reading, Writing & Math)',
     'ielts': 'IELTS Prep Exam & Vocabulary Archive',
     'toefl': 'TOEFL Prep Exam & Academic Archive'
   };
@@ -1862,12 +1865,15 @@ function showArchiveView(rawSection) {
   
   const topicMap = {
     'ca': ['All Topics', 'Auditing & Assurance', 'Taxation', 'Corporate Law', 'Accounting Standards (Ind AS)', 'Strategic Financial Management', 'Exam Preparation & Career'],
-    'students': ['Education', 'Science', 'Technology', 'Current Affairs', 'Career'],
-    'general': ['Education', 'Science', 'Technology', 'Current Affairs', 'Career'],
-    'ielts': ['Reading', 'Writing', 'Listening', 'Speaking', 'Vocabulary', 'Current Affairs'],
-    'toefl': ['Academic English', 'Reading', 'Writing', 'Listening', 'Speaking', 'Vocabulary']
+    'students': ['All Topics', 'Education', 'Science', 'Technology', 'Current Affairs', 'Career'],
+    'general': ['All Topics', 'Education', 'Science', 'Technology', 'Current Affairs', 'Career'],
+    'neet': ['All Topics', 'Biology', 'Chemistry', 'Physics', 'Genetics', 'Human Physiology', 'Biomolecules'],
+    'jee': ['All Topics', 'Physics', 'Chemistry', 'Mathematics', 'Mechanics', 'Calculus', 'Electrodynamics'],
+    'sat': ['All Topics', 'Reading & Writing', 'Math', 'Grammar', 'Algebra', 'Advanced Math'],
+    'ielts': ['All Topics', 'Reading', 'Writing', 'Listening', 'Speaking', 'Vocabulary', 'Current Affairs'],
+    'toefl': ['All Topics', 'Academic English', 'Reading', 'Writing', 'Listening', 'Speaking', 'Vocabulary']
   };
-  renderArchiveTopics(topicMap[section] || ['Reading', 'Writing', 'Listening', 'Speaking']);
+  renderArchiveTopics(topicMap[section] || ['All Topics', 'Reading', 'Writing', 'Listening', 'Speaking']);
   
   loadArchiveArticles();
 }
@@ -1924,7 +1930,7 @@ window.openCaArticleModal = function(id) {
       
       <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
         <span class="category-badge" style="background: rgba(0, 102, 255, 0.12); color: var(--accent); font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 6px;">
-          ${art.categoryName || 'Chartered Accountancy'}
+          ${art.categoryName || 'Academic Resource'}
         </span>
         <span class="difficulty-badge difficulty-advanced" style="font-size: 11px; padding: 4px 8px; border-radius: 6px;">
           ${art.difficulty || 'Advanced'}
@@ -1956,7 +1962,7 @@ window.openCaArticleModal = function(id) {
 
       <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 13px; color: var(--text-muted);">
-          <i class="fa-solid fa-book-bookmark"></i> ${art.source || 'ICAI CA Final Revision Textbook'} • ${art.wordCount || 480} words
+          <i class="fa-solid fa-book-bookmark"></i> ${art.source || 'Curated Academic Textbook'} • ${art.wordCount || 480} words
         </div>
         <div style="display: flex; gap: 10px;">
           <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.querySelector('#modal-content').innerText); showToast('Study article copied to clipboard!', 'success');">
@@ -1997,7 +2003,16 @@ async function loadArchiveArticles() {
     // Header count & description
     const countHeader = document.createElement('div');
     countHeader.style.cssText = 'font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;';
-    const sourceLabel = section === 'ca' ? '50 High-Yield Textbook Articles (2026 Edition)' : 'online archive sources';
+    const sectionLabels = {
+      ca: 'Chartered Accountancy (2026 Edition)',
+      neet: 'NEET Medical Entrance Curriculum',
+      jee: 'JEE Main & Advanced Engineering Curriculum',
+      sat: 'Digital SAT Practice Masterclasses',
+      students: 'General Academic STEM & Social Sciences',
+      ielts: 'IELTS Band 8+ Modules',
+      toefl: 'TOEFL iBT Academic Modules'
+    };
+    const sourceLabel = sectionLabels[section] || 'Curated Academic Articles';
     countHeader.innerHTML = `<span>Showing <strong>${articles.length}</strong> of <strong>${data.total || articles.length}</strong> articles from ${sourceLabel}</span>`;
     list.appendChild(countHeader);
 
@@ -2005,16 +2020,16 @@ async function loadArchiveArticles() {
       const el = document.createElement('div');
       el.className = 'archive-item';
       const diffClass = `difficulty-${(art.difficulty || 'intermediate').toLowerCase()}`;
-      const pubDate = art.publishedAt ? new Date(art.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : (art.year || '2026');
+      const pubDate = art.publishedAt ? new Date(art.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : (art.year || '2026 Edition');
       const wordCount = art.wordCount || 480;
       const readTime = Math.max(2, Math.round(wordCount / 160));
       
-      const isCA = section === 'ca' || art.isTextbookArticle;
-      const readAction = isCA ? `onclick="openCaArticleModal('${art.id}')"` : `href="${art.url}" target="_blank"`;
+      const hasFullContent = Boolean(art.content || art.coreConcept || art.isTextbookArticle);
+      const readAction = hasFullContent ? `onclick="openCaArticleModal('${art.id || art.code}')"` : `href="${art.url}" target="_blank"`;
 
       el.innerHTML = `
         <div class="archive-item-header">
-          <div class="archive-item-title" style="cursor: pointer;" ${isCA ? `onclick="openCaArticleModal('${art.id}')"` : ''}>
+          <div class="archive-item-title" style="cursor: pointer;" ${hasFullContent ? `onclick="openCaArticleModal('${art.id || art.code}')"` : ''}>
             ${art.title}
           </div>
           <span class="difficulty-badge ${diffClass}">${art.difficulty || 'Advanced'}</span>
@@ -2028,8 +2043,8 @@ async function loadArchiveArticles() {
             <span><i class="fa-solid fa-file-word"></i> ${wordCount} words</span>
             <span><i class="fa-regular fa-clock"></i> ${readTime} min read</span>
           </div>
-          ${isCA 
-            ? `<button class="read-btn" onclick="openCaArticleModal('${art.id}')" style="cursor: pointer; border: none;">READ STUDY ARTICLE &rarr;</button>`
+          ${hasFullContent 
+            ? `<button class="read-btn" onclick="openCaArticleModal('${art.id || art.code}')" style="cursor: pointer; border: none;">READ STUDY ARTICLE &rarr;</button>`
             : `<a class="read-btn" href="${art.url}" target="_blank" style="text-decoration: none;">READ ARTICLE ↗</a>`
           }
         </div>

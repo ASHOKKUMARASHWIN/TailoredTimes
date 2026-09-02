@@ -102,11 +102,10 @@ const getArchiveArticles = async (req, res) => {
       );
     }
 
-    // Supplement with live topic articles if requested or for variety
-    if (filtered.length < limitNum && section !== 'ca') {
+    // Supplement with live topic articles if filtered is empty and a specific search query was requested
+    if (filtered.length === 0 && q && q.trim()) {
       try {
-        let liveSearchTopic = topic || section;
-        if (section === 'ielts' || section === 'toefl') liveSearchTopic = 'academic reading ' + (topic || 'essay');
+        let liveSearchTopic = q;
         const liveArticles = await rssFetcher.fetchSearchFeed(liveSearchTopic);
         
         liveArticles.forEach((la, idx) => {
