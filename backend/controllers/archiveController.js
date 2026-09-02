@@ -84,9 +84,7 @@ const getArchiveArticles = async (req, res) => {
       curatedPool = generalStudentArticles;
     }
 
-    // Assign a deterministic year to each article based on its index
-    const annotatedPool = assignYears(curatedPool);
-    let filtered = [...annotatedPool];
+    let filtered = [...curatedPool];
 
     // Year filtering — only apply if a specific year is selected
     if (year && parseInt(year)) {
