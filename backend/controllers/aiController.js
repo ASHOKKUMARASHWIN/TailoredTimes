@@ -192,7 +192,7 @@ Examiners frequently test the small details—like forgetting negative signs, co
 
 const askAI = async (req, res) => {
   try {
-    const { question, mode = 'doubt', context = '' } = req.body;
+    const { question, mode = 'doubt', context = '', history = [] } = req.body;
 
     if (!question || !question.trim()) {
       return res.status(400).json({ message: 'Question is required' });
@@ -202,13 +202,36 @@ const askAI = async (req, res) => {
 
     if (apiKey) {
       try {
-        const systemPrompt = `You are Tyla, an intelligent, encouraging, friendly, and highly precise universal academic AI study mentor on TailoredTimes.
-Help students clear doubts across any subject (CA, NEET, JEE, SAT, IELTS, TOEFL, STEM, Humanities, Law, and General Studies).
-Provide step-by-step explanations, clear headings, formulas, and exam tips.
-When generating MCQs, format options as "- **A)** Option", "- **B)** Option", etc. and include ✅ on the correct answer.
+        const systemPrompt = `You are Tyla, an intelligent, encouraging, friendly, and highly conversational universal academic AI study buddy and tutor on TailoredTimes (like ChatGPT, Gemini, and Claude).
+Help students with any topic—from homework doubts, accounting standards, STEM, coding, essay writing, exam preparation, to fun conversational questions.
+Respond warmly, empathetically, and conversationally.
+When explaining concepts, use intuitive real-life analogies, clear step-by-step structure, bullet points, and check in on the student.
+When generating practice quizzes/MCQs, format options as "- **A)** Option text", "- **B)** Option text", etc. with ✅ next to the correct answer.
 Format responses in clean GitHub-style Markdown.`;
 
-        const userPrompt = `${context ? 'Article Context: ' + context + '\n' : ''}Mode: ${mode}\nStudent Question: ${question}`;
+        const contents = [
+          { role: 'user', parts: [{ text: systemPrompt }] },
+          { role: 'model', parts: [{ text: "Hey! I'm Tyla, your AI study buddy. I'm ready to help with warmth, clarity, and precision!" }] }
+        ];
+
+        // Append multi-turn history
+        if (Array.isArray(history)) {
+          for (const turn of history) {
+            if (turn && turn.content) {
+              contents.push({
+                role: turn.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: turn.content }]
+              });
+            }
+          }
+        }
+
+        // Current student turn
+        const currentPrompt = `${context ? 'Article Attached Context: ' + context + '\n' : ''}${question}`;
+        contents.push({
+          role: 'user',
+          parts: [{ text: currentPrompt }]
+        });
 
         const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         
@@ -216,12 +239,10 @@ Format responses in clean GitHub-style Markdown.`;
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [
-              { role: 'user', parts: [{ text: systemPrompt + '\n\n' + userPrompt }] }
-            ],
+            contents,
             generationConfig: {
-              temperature: 0.4,
-              maxOutputTokens: 1000
+              temperature: 0.6,
+              maxOutputTokens: 1200
             }
           })
         });
@@ -237,7 +258,7 @@ Format responses in clean GitHub-style Markdown.`;
           }
         }
       } catch (geminiError) {
-        console.warn('Gemini API call error:', geminiError.message);
+        console.warn('Gemini API multi-turn call error:', geminiError.message);
       }
     }
 
