@@ -2459,11 +2459,12 @@ function debounce(func, wait) {
 }
 
 /* ==========================================================================
-   14. INBUILT AI STUDY TUTOR & DOUBT SOLVER CLIENT
+   14. INBUILT AI STUDY TUTOR & DOUBT SOLVER CLIENT (TYLA)
    ========================================================================== */
 const aiState = {
   isOpen: false,
-  activeSubject: 'students',
+  mode: 'doubt',
+  quizScore: 0,
   currentArticleContext: '',
   articleTitle: '',
   isProcessing: false,
@@ -2476,10 +2477,6 @@ function toggleAIChat() {
   aiState.isOpen = !aiState.isOpen;
   if (aiState.isOpen) {
     drawer.classList.remove('hidden');
-    // Align with active archive section if available
-    if (state.archive && state.archive.section) {
-      setAISubject(state.archive.section);
-    }
     setTimeout(() => {
       const input = document.getElementById('ai-user-input');
       if (input) input.focus();
@@ -2489,29 +2486,27 @@ function toggleAIChat() {
   }
 }
 
-function setAISubject(subject) {
-  aiState.activeSubject = subject;
-  document.querySelectorAll('.ai-sub-pill').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-subject') === subject);
-  });
-}
+function setTylaMode(mode, btn) {
+  aiState.mode = mode;
+  document.querySelectorAll('.ai-mode-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 
-// Subject pill clicks
-document.addEventListener('click', (e) => {
-  const pill = e.target.closest('.ai-sub-pill');
-  if (pill) {
-    const sub = pill.getAttribute('data-subject');
-    if (sub) setAISubject(sub);
-  }
-});
+  const input = document.getElementById('ai-user-input');
+  if (!input) return;
+
+  const placeholders = {
+    doubt: "Type your academic question or doubt here... (e.g. 'Explain Ind AS 116' or 'How does DNA replication work?')",
+    quiz: "Enter any topic to generate an interactive quiz... (e.g. 'Calculus Integrals', 'Photosynthesis', or 'IELTS Writing')",
+    mnemonic: "Enter a concept to get a memory hook or acronym... (e.g. 'Cranial Nerves', 'Tax Deductions', or 'Periodic Table')",
+    formulas: "Enter a topic for formula cheat sheet... (e.g. 'Rotational Mechanics', 'WACC Valuation', or 'Optics')"
+  };
+  input.placeholder = placeholders[mode] || placeholders.doubt;
+  input.focus();
+}
 
 function openAIDoubtForArticle(articleId, title, coreConcept, section) {
   aiState.currentArticleContext = `Article Title: ${title}. Core Concept: ${coreConcept}`;
   aiState.articleTitle = title;
-  
-  if (section) {
-    setAISubject(section);
-  }
   
   const ind = document.getElementById('ai-context-indicator');
   const titleEl = document.getElementById('ai-context-title');
@@ -2526,7 +2521,7 @@ function openAIDoubtForArticle(articleId, title, coreConcept, section) {
   
   const input = document.getElementById('ai-user-input');
   if (input) {
-    input.value = `Explain the core concepts and exam applications of "${title}"`;
+    input.value = `Explain the core concepts, derivations, and exam applications of "${title}"`;
     input.focus();
   }
 }
@@ -2545,7 +2540,7 @@ function clearAIChat() {
       <div class="ai-message ai-msg-bot">
         <div class="msg-bubble">
           <p>🧹 <strong>Chat Cleared.</strong></p>
-          <p>Hi! I'm <strong>Tyla</strong>. Ask me any doubt or choose a subject above to get started!</p>
+          <p>Hi! I'm <strong>Tyla</strong>. Ask me any doubt or test yourself on any topic!</p>
         </div>
         <span class="msg-time">Tyla • Ready</span>
       </div>
@@ -2610,7 +2605,7 @@ async function submitAIDoubt() {
   try {
     const payload = {
       question,
-      subject: aiState.activeSubject,
+      mode: aiState.mode,
       context: aiState.currentArticleContext
     };
 
@@ -2632,7 +2627,7 @@ async function submitAIDoubt() {
     botMsgEl.className = 'ai-message ai-msg-bot';
     
     // Generate contextual dynamic follow-up chips
-    const followUpChips = getDynamicFollowUpChips(question, aiState.activeSubject);
+    const followUpChips = getDynamicFollowUpChips(question, aiState.mode);
 
     botMsgEl.innerHTML = `
       <div class="msg-bubble">
@@ -2670,16 +2665,17 @@ async function submitAIDoubt() {
   }
 }
 
-function getDynamicFollowUpChips(userQ, subject) {
+function getDynamicFollowUpChips(userQ, mode) {
   const norm = userQ.toLowerCase();
-  if (norm.includes('mcq') || norm.includes('quiz')) {
+  if (norm.includes('mcq') || norm.includes('quiz') || mode === 'quiz') {
     return [
-      { label: '🧮 Give more challenging MCQs', prompt: 'Give me 3 more advanced high-difficulty practice MCQs on this.' },
+      { label: '🧮 Give harder MCQs', prompt: 'Give me 3 more advanced high-difficulty practice MCQs on this.' },
       { label: '📋 Show key formula summary', prompt: 'What are the key formulas and laws for this topic?' },
+      { label: '🧠 Mnemonic memory hook', prompt: 'Give me a memorable mnemonic or acronym for this topic.' },
       { label: '💡 Real-world case study', prompt: 'Show me a real-world case study or practical application of this.' }
     ];
   }
-  if (norm.includes('formula') || norm.includes('cheat sheet')) {
+  if (norm.includes('formula') || norm.includes('cheat sheet') || mode === 'formulas') {
     return [
       { label: '🎯 Test me on these formulas', prompt: 'Test me with 3 calculation-based practice questions using these formulas.' },
       { label: '⚠️ What mistakes happen in exams?', prompt: 'What are the common exam calculation mistakes and traps students make here?' },
@@ -2689,6 +2685,7 @@ function getDynamicFollowUpChips(userQ, subject) {
   return [
     { label: '💡 Explain with simple analogy', prompt: 'Can you explain this with an ultra-simple real-world analogy?' },
     { label: '🎯 Test me with 3 MCQs', prompt: 'Give me 3 high-yield practice MCQs with detailed explanations on this topic.' },
+    { label: '🧠 Create a mnemonic', prompt: 'Give me a catchy mnemonic or memory trick to remember this easily.' },
     { label: '📋 Formula cheat sheet', prompt: 'Give me the quick formula sheet and core rules for this topic.' },
     { label: '⚠️ Common exam traps', prompt: 'What are the most common exam traps and mistakes students make on this?' }
   ];
@@ -2738,7 +2735,7 @@ function renderMarkdownToHTML(md) {
   return html;
 }
 
-// Interactive Quiz Option Click Handler
+// Interactive Quiz Option Click Handler with Score Tracker
 function handleQuizOptionClick(btn) {
   const isCorrect = btn.getAttribute('data-correct') === 'true';
   const parentBubble = btn.closest('.msg-bubble');
@@ -2748,8 +2745,17 @@ function handleQuizOptionClick(btn) {
   
   if (isCorrect) {
     btn.classList.add('correct');
-    btn.innerHTML += ' <span class="quiz-badge correct-badge"><i class="fa-solid fa-circle-check"></i> Correct! 🎉</span>';
-    showToast('🎉 Brilliant! You got the right answer!', 'success');
+    btn.innerHTML += ' <span class="quiz-badge correct-badge"><i class="fa-solid fa-circle-check"></i> Correct! 🎉 +10 pts</span>';
+    
+    // Increment Score
+    aiState.quizScore += 10;
+    const scoreEl = document.getElementById('tyla-quiz-pts');
+    if (scoreEl) {
+      scoreEl.textContent = aiState.quizScore;
+      scoreEl.parentElement.classList.add('ai-score-pulse');
+      setTimeout(() => scoreEl.parentElement.classList.remove('ai-score-pulse'), 800);
+    }
+    showToast('🎉 Brilliant! +10 Quiz Points Earned!', 'success');
   } else {
     btn.classList.add('incorrect');
     btn.innerHTML += ' <span class="quiz-badge incorrect-badge"><i class="fa-solid fa-circle-xmark"></i> Incorrect</span>';
