@@ -92,7 +92,7 @@ When presented with a complex multi-part problem on this topic, what is the best
 3. **Mnemonic / Memory Hook:** Remember: *Definition → Governing Mechanism → Boundary Exception*.`;
   }
 
-  return `### 🎓 Academic Tutor Explanation (${subInfo.name})
+  return `### 🎓 Tyla's Academic Explanation (${subInfo.name})
 
 **📌 Query Breakdown:**
 *${question.trim().endsWith('?') ? question : question + '?'}*
@@ -115,7 +115,7 @@ ${context ? `> **Referenced Article Context:** ${context.slice(0, 180)}...\n` : 
 Present your working clearly with labeled steps. On multiple-choice questions, eliminate the two most obviously flawed options first before choosing the best answer.
 
 ---
-💡 *Want practice MCQs, a step-by-step formula breakdown, or a simplified analogy? Just ask!*`;
+💡 *Want practice MCQs, a step-by-step formula breakdown, or a simplified analogy? Just ask Tyla!*`;
 }
 
 const askAI = async (req, res) => {
@@ -132,7 +132,7 @@ const askAI = async (req, res) => {
       try {
         const subInfo = subjectKnowledgeBase[subject] || subjectKnowledgeBase.students;
         const systemPrompt = `${subInfo.promptContext}
-You are an intelligent, encouraging, and highly precise academic tutor on TailoredTimes.
+You are Tyla, an intelligent, encouraging, friendly, and highly precise academic AI tutor on TailoredTimes.
 Help students clear doubts with step-by-step explanations, clear headings, formulas, and exam tips.
 Format responses in clean GitHub-style Markdown.`;
 
