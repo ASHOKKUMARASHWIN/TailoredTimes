@@ -1980,7 +1980,10 @@ window.openCaArticleModal = function(id) {
         <div style="font-size: 13px; color: var(--text-muted);">
           <i class="fa-solid fa-book-bookmark"></i> ${art.source || 'Curated Academic Textbook'} • ${art.wordCount || 480} words
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-sm" style="background: linear-gradient(135deg, #0066ff, #7928ca); color: #fff; border: none;" onclick="openAIDoubtForArticle('${art.id || art.code}', '${(art.title || '').replace(/'/g, "\\'")}', '${(art.coreConcept || '').replace(/'/g, "\\'")}', '${art.section || state.archive.section || 'students'}')">
+            <i class="fa-solid fa-robot"></i> Ask AI Doubt
+          </button>
           <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.querySelector('#modal-content').innerText); showToast('Study article copied to clipboard!', 'success');">
             <i class="fa-regular fa-copy"></i> Copy Text
           </button>
@@ -2452,4 +2455,249 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
+}
+
+/* ==========================================================================
+   14. INBUILT AI STUDY TUTOR & DOUBT SOLVER CLIENT
+   ========================================================================== */
+const aiState = {
+  isOpen: false,
+  activeSubject: 'students',
+  currentArticleContext: '',
+  articleTitle: '',
+  isProcessing: false,
+  messages: []
+};
+
+function toggleAIChat() {
+  const drawer = document.getElementById('ai-chat-drawer');
+  if (!drawer) return;
+  aiState.isOpen = !aiState.isOpen;
+  if (aiState.isOpen) {
+    drawer.classList.remove('hidden');
+    // Align with active archive section if available
+    if (state.archive && state.archive.section) {
+      setAISubject(state.archive.section);
+    }
+    setTimeout(() => {
+      const input = document.getElementById('ai-user-input');
+      if (input) input.focus();
+    }, 150);
+  } else {
+    drawer.classList.add('hidden');
+  }
+}
+
+function setAISubject(subject) {
+  aiState.activeSubject = subject;
+  document.querySelectorAll('.ai-sub-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-subject') === subject);
+  });
+}
+
+// Subject pill clicks
+document.addEventListener('click', (e) => {
+  const pill = e.target.closest('.ai-sub-pill');
+  if (pill) {
+    const sub = pill.getAttribute('data-subject');
+    if (sub) setAISubject(sub);
+  }
+});
+
+function openAIDoubtForArticle(articleId, title, coreConcept, section) {
+  aiState.currentArticleContext = `Article Title: ${title}. Core Concept: ${coreConcept}`;
+  aiState.articleTitle = title;
+  
+  if (section) {
+    setAISubject(section);
+  }
+  
+  const ind = document.getElementById('ai-context-indicator');
+  const titleEl = document.getElementById('ai-context-title');
+  if (ind && titleEl) {
+    titleEl.textContent = `Attached: ${title.slice(0, 32)}...`;
+    ind.classList.remove('hidden');
+  }
+  
+  if (!aiState.isOpen) {
+    toggleAIChat();
+  }
+  
+  const input = document.getElementById('ai-user-input');
+  if (input) {
+    input.value = `Explain the core concepts and exam applications of "${title}"`;
+    input.focus();
+  }
+}
+
+function clearAIContext() {
+  aiState.currentArticleContext = '';
+  aiState.articleTitle = '';
+  const ind = document.getElementById('ai-context-indicator');
+  if (ind) ind.classList.add('hidden');
+}
+
+function clearAIChat() {
+  const container = document.getElementById('ai-messages-container');
+  if (container) {
+    container.innerHTML = `
+      <div class="ai-message ai-msg-bot">
+        <div class="msg-bubble">
+          <p>🧹 <strong>Chat Cleared.</strong></p>
+          <p>Ask me any new doubt or choose a subject above to begin!</p>
+        </div>
+        <span class="msg-time">Ready</span>
+      </div>
+    `;
+  }
+  aiState.messages = [];
+  clearAIContext();
+}
+
+function sendQuickPrompt(promptText) {
+  const input = document.getElementById('ai-user-input');
+  if (input) {
+    input.value = promptText;
+    submitAIDoubt();
+  }
+}
+
+function handleAIKeyDown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    submitAIDoubt();
+  }
+}
+
+async function submitAIDoubt() {
+  const input = document.getElementById('ai-user-input');
+  const sendBtn = document.getElementById('ai-send-btn');
+  const container = document.getElementById('ai-messages-container');
+  if (!input || !container || aiState.isProcessing) return;
+
+  const question = input.value.trim();
+  if (!question) return;
+
+  input.value = '';
+  aiState.isProcessing = true;
+  if (sendBtn) sendBtn.disabled = true;
+
+  // Append user message
+  const userMsgEl = document.createElement('div');
+  userMsgEl.className = 'ai-message ai-msg-user';
+  userMsgEl.innerHTML = `
+    <div class="msg-bubble">
+      ${escapeHTML(question)}
+    </div>
+    <span class="msg-time">You</span>
+  `;
+  container.appendChild(userMsgEl);
+
+  // Append loading bubble
+  const loadingEl = document.createElement('div');
+  loadingEl.className = 'ai-message ai-msg-bot';
+  loadingEl.id = 'ai-typing-indicator';
+  loadingEl.innerHTML = `
+    <div class="msg-bubble" style="display: flex; align-items: center; gap: 8px;">
+      <i class="fa-solid fa-spinner fa-spin" style="color: var(--accent);"></i>
+      <span style="font-size: 13px; color: var(--text-muted);">AI Tutor is formulating step-by-step solution...</span>
+    </div>
+  `;
+  container.appendChild(loadingEl);
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const payload = {
+      question,
+      subject: aiState.activeSubject,
+      context: aiState.currentArticleContext
+    };
+
+    const res = await fetch('/api/ai/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    loadingEl.remove();
+
+    const answer = data.answer || 'I am ready to help you. Could you rephrase your question?';
+    
+    // Format response HTML
+    const formattedAnswer = renderMarkdownToHTML(answer);
+
+    const botMsgEl = document.createElement('div');
+    botMsgEl.className = 'ai-message ai-msg-bot';
+    botMsgEl.innerHTML = `
+      <div class="msg-bubble">
+        ${formattedAnswer}
+        <button class="btn-copy-ai-msg" onclick="copyAIText(this)"><i class="fa-regular fa-copy"></i> Copy Solution</button>
+      </div>
+      <span class="msg-time">AI Tutor • ${data.source === 'gemini-ai' ? 'Gemini 1.5' : 'Academic Tutor'}</span>
+    `;
+    container.appendChild(botMsgEl);
+
+  } catch (error) {
+    loadingEl.remove();
+    const errEl = document.createElement('div');
+    errEl.className = 'ai-message ai-msg-bot';
+    errEl.innerHTML = `
+      <div class="msg-bubble" style="border-left: 3px solid var(--accent-red);">
+        <p style="color: var(--accent-red); font-weight: 700;">⚠️ Could not fetch answer right now.</p>
+        <p style="font-size: 13px;">Please check your connection or try re-asking your doubt.</p>
+      </div>
+    `;
+    container.appendChild(errEl);
+  } finally {
+    aiState.isProcessing = false;
+    if (sendBtn) sendBtn.disabled = false;
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, 
+    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+  );
+}
+
+function renderMarkdownToHTML(md) {
+  if (!md) return '';
+  let html = escapeHTML(md);
+
+  // Bold
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Headers
+  html = html.replace(/^### (.*$)/gim, '<h3 style="color: var(--accent); margin: 8px 0 4px 0; font-size: 15px;">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 style="color: var(--accent); margin: 10px 0 6px 0; font-size: 16px;">$1</h2>');
+  // Blockquotes
+  html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+  // Code Blocks
+  html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, '<pre><code>$2</code></pre>');
+  // Inline Code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bullet lists
+  html = html.replace(/^[•\-\*] (.*$)/gim, '<li>$1</li>');
+  // Numbered lists
+  html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+  // Line breaks
+  html = html.replace(/\n/g, '<br>');
+
+  return html;
+}
+
+function copyAIText(btn) {
+  const bubble = btn.closest('.msg-bubble');
+  if (bubble) {
+    const textToCopy = bubble.innerText.replace('Copy Solution', '').trim();
+    navigator.clipboard.writeText(textToCopy);
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Solution';
+    }, 2000);
+    showToast('Solution copied to clipboard!', 'success');
+  }
 }
