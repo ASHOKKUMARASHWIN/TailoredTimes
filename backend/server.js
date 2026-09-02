@@ -12,6 +12,7 @@ const userRoutes = require('./routes/user');
 const newsRoutes = require('./routes/news');
 const archiveRoutes = require('./routes/archive');
 const adminRoutes = require('./routes/admin');
+const aiRoutes = require('./routes/ai');
 const rssFetcher = require('./services/rssFetcher');
 const sourcesConfig = require('./config/sources');
 const Article = require('./models/Article');
@@ -37,6 +38,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/archive', archiveRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Serve frontend if present
 const frontendPath = path.join(__dirname, '../frontend');
