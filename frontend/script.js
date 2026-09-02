@@ -1981,8 +1981,8 @@ window.openCaArticleModal = function(id) {
           <i class="fa-solid fa-book-bookmark"></i> ${art.source || 'Curated Academic Textbook'} • ${art.wordCount || 480} words
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-sm" style="background: linear-gradient(135deg, #0066ff, #7928ca); color: #fff; border: none;" onclick="openAIDoubtForArticle('${art.id || art.code}', '${(art.title || '').replace(/'/g, "\\'")}', '${(art.coreConcept || '').replace(/'/g, "\\'")}', '${art.section || state.archive.section || 'students'}')">
-            <i class="fa-solid fa-robot"></i> Ask AI Doubt
+          <button class="btn btn-sm" style="background: linear-gradient(135deg, #0066ff, #7928ca); color: #fff; border: none; font-weight: 700;" onclick="openAIDoubtForArticle('${art.id || art.code}', '${(art.title || '').replace(/'/g, "\\'")}', '${(art.coreConcept || '').replace(/'/g, "\\'")}', '${art.section || state.archive.section || 'students'}')">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Tyla ✦
           </button>
           <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.querySelector('#modal-content').innerText); showToast('Study article copied to clipboard!', 'success');">
             <i class="fa-regular fa-copy"></i> Copy Text
@@ -2544,9 +2544,9 @@ function clearAIChat() {
       <div class="ai-message ai-msg-bot">
         <div class="msg-bubble">
           <p>🧹 <strong>Chat Cleared.</strong></p>
-          <p>Ask me any new doubt or choose a subject above to begin!</p>
+          <p>Hi! I'm <strong>Tyla</strong>. Ask me any doubt or choose a subject above to get started!</p>
         </div>
-        <span class="msg-time">Ready</span>
+        <span class="msg-time">Tyla • Ready</span>
       </div>
     `;
   }
@@ -2600,7 +2600,7 @@ async function submitAIDoubt() {
   loadingEl.innerHTML = `
     <div class="msg-bubble" style="display: flex; align-items: center; gap: 8px;">
       <i class="fa-solid fa-spinner fa-spin" style="color: var(--accent);"></i>
-      <span style="font-size: 13px; color: var(--text-muted);">AI Tutor is formulating step-by-step solution...</span>
+      <span style="font-size: 13px; color: var(--text-muted);">Tyla is formulating step-by-step solution...</span>
     </div>
   `;
   container.appendChild(loadingEl);
@@ -2634,7 +2634,7 @@ async function submitAIDoubt() {
         ${formattedAnswer}
         <button class="btn-copy-ai-msg" onclick="copyAIText(this)"><i class="fa-regular fa-copy"></i> Copy Solution</button>
       </div>
-      <span class="msg-time">AI Tutor • ${data.source === 'gemini-ai' ? 'Gemini 1.5' : 'Academic Tutor'}</span>
+      <span class="msg-time">Tyla ✦ AI Tutor</span>
     `;
     container.appendChild(botMsgEl);
 
@@ -2644,7 +2644,7 @@ async function submitAIDoubt() {
     errEl.className = 'ai-message ai-msg-bot';
     errEl.innerHTML = `
       <div class="msg-bubble" style="border-left: 3px solid var(--accent-red);">
-        <p style="color: var(--accent-red); font-weight: 700;">⚠️ Could not fetch answer right now.</p>
+        <p style="color: var(--accent-red); font-weight: 700;">⚠️ Tyla could not fetch the answer right now.</p>
         <p style="font-size: 13px;">Please check your connection or try re-asking your doubt.</p>
       </div>
     `;
