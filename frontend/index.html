@@ -539,6 +539,78 @@
         </div>
     </div>
 
+    <!-- Floating AI Doubt Clearing Bot Button -->
+    <button id="btn-ai-tutor" class="floating-ai-btn" onclick="toggleAIChat()" title="Ask AI Study Tutor & Clear Doubts">
+        <div class="ai-btn-pulse"></div>
+        <i class="fa-solid fa-robot"></i>
+        <span class="ai-btn-text">Ask AI Tutor</span>
+    </button>
+
+    <!-- Inbuilt AI Study Assistant & Doubt Solver Drawer -->
+    <div id="ai-chat-drawer" class="ai-chat-drawer hidden">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title-group">
+                <div class="ai-avatar"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div>
+                    <div class="ai-chat-title">AI Study Tutor & Doubt Solver</div>
+                    <div class="ai-chat-status"><span class="status-dot"></span> Ready to clear doubts 24/7</div>
+                </div>
+            </div>
+            <div class="ai-header-actions">
+                <button class="ai-action-btn" onclick="clearAIChat()" title="Clear Chat"><i class="fa-regular fa-trash-can"></i></button>
+                <button class="ai-action-btn" onclick="toggleAIChat()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- Subject Quick Selector -->
+        <div class="ai-subject-bar">
+            <span class="ai-bar-label"><i class="fa-solid fa-book-open"></i> Subject:</span>
+            <div class="ai-subject-pills" id="ai-subject-pills">
+                <button class="ai-sub-pill active" data-subject="students">🎓 General</button>
+                <button class="ai-sub-pill" data-subject="ca">📚 CA</button>
+                <button class="ai-sub-pill" data-subject="neet">🩺 NEET</button>
+                <button class="ai-sub-pill" data-subject="jee">⚛️ JEE</button>
+                <button class="ai-sub-pill" data-subject="sat">📐 SAT</button>
+                <button class="ai-sub-pill" data-subject="ielts">🇬🇧 IELTS</button>
+                <button class="ai-sub-pill" data-subject="toefl">🌎 TOEFL</button>
+            </div>
+        </div>
+
+        <!-- Active Article Context Tag -->
+        <div id="ai-context-indicator" class="ai-context-box hidden">
+            <div class="ai-context-content">
+                <i class="fa-solid fa-paperclip"></i>
+                <span id="ai-context-title">Article Context Loaded</span>
+            </div>
+            <button onclick="clearAIContext()" class="btn-clear-context" title="Remove context">&times;</button>
+        </div>
+
+        <!-- Quick Action Prompt Chips -->
+        <div class="ai-quick-prompts">
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Explain this in simple step-by-step terms with a real-world analogy.')">💡 Explain Simply</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Give me 3 high-yield practice MCQs with detailed explanations.')">🎯 3 Practice MCQs</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Give me the key formulas, laws, and cheat-sheet summary.')">📋 Formula Sheet</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('What are the common exam traps and mistakes students make on this?')">⚠️ Exam Traps</button>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div class="ai-messages" id="ai-messages-container">
+            <div class="ai-message ai-msg-bot">
+                <div class="msg-bubble">
+                    <p>👋 <strong>Hello! I'm your Inbuilt AI Academic Tutor.</strong></p>
+                    <p>Ask me any doubt across <strong>CA, NEET, JEE, SAT, IELTS, TOEFL</strong>, or any study topic! I can solve tricky problems, explain formulas, give revision mnemonics, and generate practice questions.</p>
+                </div>
+                <span class="msg-time">Ready</span>
+            </div>
+        </div>
+
+        <!-- Chat Input Field -->
+        <div class="ai-chat-input-row">
+            <textarea id="ai-user-input" placeholder="Type your doubt or question here... (e.g. 'Explain Ind AS 116' or 'How does DNA replication work?')" rows="1" onkeydown="handleAIKeyDown(event)"></textarea>
+            <button id="ai-send-btn" class="ai-send-btn" onclick="submitAIDoubt()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
