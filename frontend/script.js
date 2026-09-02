@@ -1878,17 +1878,33 @@ function showArchiveView(rawSection) {
   loadArchiveArticles();
 }
 
-function renderArchiveYears() {
+function renderArchiveYears(availableYearsSet) {
   const container = document.getElementById('archive-years');
   container.innerHTML = '';
+
+  // "All Years" reset button
+  const allBtn = document.createElement('button');
+  allBtn.className = `year-btn ${!state.archive.year ? 'active' : ''}`;
+  allBtn.textContent = 'All Years';
+  allBtn.title = 'Show articles from all years';
+  allBtn.addEventListener('click', () => {
+    state.archive.year = '';
+    renderArchiveYears(availableYearsSet);
+    loadArchiveArticles();
+  });
+  container.appendChild(allBtn);
+
   const currentYear = new Date().getFullYear();
   for (let y = currentYear; y >= 2017; y--) {
+    const hasContent = !availableYearsSet || availableYearsSet.has(y);
     const btn = document.createElement('button');
     btn.className = `year-btn ${state.archive.year === y ? 'active' : ''}`;
     btn.textContent = y;
+    btn.title = hasContent ? `Show ${y} articles` : `No articles for ${y} in this section`;
+    btn.style.opacity = hasContent ? '1' : '0.35';
     btn.addEventListener('click', () => {
       state.archive.year = state.archive.year === y ? '' : y;
-      renderArchiveYears();
+      renderArchiveYears(availableYearsSet);
       loadArchiveArticles();
     });
     container.appendChild(btn);
@@ -1995,8 +2011,23 @@ async function loadArchiveArticles() {
     const articles = data.articles || [];
     currentArchiveArticles = articles;
 
+    // Fetch year distribution for this section (without year filter) to know which years have content
+    // Only do this on the first load (no year selected) to populate year buttons
+    if (!year) {
+      try {
+        const allData = await safeApiCall(`/api/archive/articles?section=${section}&page=1&limit=999`);
+        const yearSet = new Set((allData.articles || []).map(a => a.year).filter(Boolean));
+        renderArchiveYears(yearSet);
+      } catch (e) { /* keep existing buttons */ }
+    }
+
     if (articles.length === 0) {
-      list.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No archive documents found for this topic/year. Try selecting a different topic or year.</div>';
+      const yearStr = year ? ` for ${year}` : '';
+      list.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">
+        <div style="font-size: 32px; margin-bottom: 12px;">📚</div>
+        <div style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">No articles found${yearStr}</div>
+        <div style="font-size: 14px;">Try selecting a different year or topic, or click <strong>All Years</strong> to see all articles.</div>
+      </div>`;
       return;
     }
     
@@ -2004,7 +2035,7 @@ async function loadArchiveArticles() {
     const countHeader = document.createElement('div');
     countHeader.style.cssText = 'font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;';
     const sectionLabels = {
-      ca: 'Chartered Accountancy (2026 Edition)',
+      ca: 'Chartered Accountancy',
       neet: 'NEET Medical Entrance Curriculum',
       jee: 'JEE Main & Advanced Engineering Curriculum',
       sat: 'Digital SAT Practice Masterclasses',
@@ -2013,7 +2044,8 @@ async function loadArchiveArticles() {
       toefl: 'TOEFL iBT Academic Modules'
     };
     const sourceLabel = sectionLabels[section] || 'Curated Academic Articles';
-    countHeader.innerHTML = `<span>Showing <strong>${articles.length}</strong> of <strong>${data.total || articles.length}</strong> articles from ${sourceLabel}</span>`;
+    const yearLabel = year ? ` — ${year} Edition` : '';
+    countHeader.innerHTML = `<span>Showing <strong>${articles.length}</strong> of <strong>${data.total || articles.length}</strong> articles from ${sourceLabel}${yearLabel}</span>`;
     list.appendChild(countHeader);
 
     articles.forEach(art => {
