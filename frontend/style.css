@@ -1380,8 +1380,8 @@ input { font-family: var(--font); outline: none; }
   text-align: right;
 }
 
-/* Fullscreen AI Chat Canvas (ChatGPT / Claude / Gemini style) */
-.ai-fullscreen-btn {
+/* Top-Left Fullscreen Toggle Button */
+.ai-fullscreen-btn-topleft {
   background: rgba(0, 102, 255, 0.1);
   border: 1px solid rgba(0, 102, 255, 0.3);
   color: var(--accent);
@@ -1393,12 +1393,15 @@ input { font-family: var(--font); outline: none; }
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  margin-right: 4px;
 }
-.ai-fullscreen-btn:hover {
+.ai-fullscreen-btn-topleft:hover {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .ai-chat-drawer.fullscreen {
