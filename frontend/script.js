@@ -2489,7 +2489,7 @@ function toggleAIChat() {
   }
 }
 
-function toggleFullscreenAIChat() {
+window.toggleFullscreenAIChat = function() {
   const drawer = document.getElementById('ai-chat-drawer');
   const btn = document.getElementById('btn-fullscreen-tyla');
   if (!drawer) return;
@@ -2499,15 +2499,18 @@ function toggleFullscreenAIChat() {
 
   if (btn) {
     btn.innerHTML = aiState.isFullscreen 
-      ? '<i class="fa-solid fa-compress"></i>' 
-      : '<i class="fa-solid fa-expand"></i>';
+      ? '<i class="fa-solid fa-compress"></i> <span>Minimize</span>' 
+      : '<i class="fa-solid fa-expand"></i> <span>Full Screen</span>';
     btn.title = aiState.isFullscreen ? 'Exit Full Screen' : 'Full Screen Canvas';
   }
+};
+function toggleFullscreenAIChat() {
+  window.toggleFullscreenAIChat();
 }
 
 // Voice Input / Speech Recognition (Speak to Tyla)
 let speechRecognitionInstance = null;
-function toggleVoiceInput() {
+window.toggleVoiceInput = function() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) {
     showToast('Voice input is not supported in this browser. Try Chrome/Edge!', 'error');
