@@ -112,8 +112,8 @@ Imagine this concept like a *train switching tracks*: the main locomotive is the
 *Does this memory trick help, or would you like another custom rhyme?* 😊`;
   }
 
-  // 3. Interactive Live Quiz Mode (MCQ Generator)
-  if (mode === 'quiz' || normQ.includes('mcq') || normQ.includes('quiz') || normQ.includes('test me') || normQ.includes('practice question')) {
+  // 3. Interactive Live Quiz Mode (Only if explicitly asking for quiz/MCQ)
+  if (mode === 'quiz' || ((normQ.startsWith('quiz') || normQ.startsWith('test me') || normQ.startsWith('give me a quiz') || normQ.startsWith('mcq')) && !normQ.includes('explain'))) {
     return `### 🎯 Tyla's Interactive Practice Quiz
 *Tap any option below to test your understanding!*
 
@@ -147,6 +147,68 @@ If a parameter exceeds the standard threshold in this topic, what is the direct 
 - **D)** No adjustment is required.
 
 > **Tyla's Tip:** Always check whether boundary thresholds trigger alternative formulas or rules!`;
+  }
+
+  // 4. Topic-Specific Rich Explanations (Black holes, Quantum physics, AI, Ind AS, Photosynthesis, etc.)
+  if (normQ.includes('black hole') || normQ.includes('singularity') || normQ.includes('event horizon')) {
+    return `### 🌌 The Wonders of Black Holes: The Ultimate Cosmic Vacuum Cleaners
+
+Imagine packing the entire mass of planet Earth into the size of a single marble. That infinite density is essentially what a **Black Hole** is!
+
+---
+
+### 💡 1. The Trampoline & Bowling Ball Analogy
+Imagine a stretched fabric trampoline:
+- A tennis ball makes a small dip (like the Moon's gravity).
+- A heavy bowling ball makes a deep crater (like our Sun's gravity).
+- A **Black Hole** is like an infinitely heavy lead weight that punctures a bottomless funnel straight through the fabric of space and time!
+
+---
+
+### 🔬 2. The Three Anatomical Parts of a Black Hole:
+1. **The Event Horizon (The "Point of No Return"):**
+   This is the invisible boundary where the escape velocity exceeds the speed of light ($c = 300,000\\text{ km/s}$). Once anything crosses this threshold, not even light can escape.
+2. **The Singularity (The Center):**
+   A point of zero volume and infinite density where our current laws of physics break down.
+3. **The Accretion Disk:**
+   Superheated swirling plasma spinning near the speed of light, glowing with intense X-rays before falling inside.
+
+---
+
+### 🎯 Quick Practice Question:
+**Q. Why can't light escape from inside a Black Hole's event horizon?**
+- **A)** Light gets absorbed like a black sponge
+- **B)** The escape velocity required exceeds the speed of light ($300,000\\text{ km/s}$) ✅
+- **C)** Black holes cancel the electromagnetic force
+- **D)** Light stops traveling in space
+
+---
+💬 *Would you like to explore what happens to time near a black hole (Time Dilation), or dive into Hawking Radiation?* 😊`;
+  }
+
+  if (normQ.includes('quantum') || normQ.includes('schrodinger') || normQ.includes('superposition')) {
+    return `### ⚛️ Quantum Physics: The Strange Rules of the Subatomic World
+
+In our everyday macroscopic world, a coin on a table is either **Heads** or **Tails**. But in the quantum realm, until you look at it, the coin is spinning so fast that it is effectively **both Heads and Tails at the exact same time!**
+
+---
+
+### 💡 1. The Core Pillars Explained Simply:
+• **Superposition:** Particles can exist in multiple potential states simultaneously until they are measured or observed.
+• **Wave-Particle Duality:** Light and electrons behave like continuous ripples in water (waves) and localized bullets (particles) depending on the experiment!
+• **Quantum Entanglement ("Spooky action at a distance"):** Two linked particles can instantly mirror each other's state across light-years without any physical connection.
+
+---
+
+### 🎯 Quick Practice Question:
+**Q. What happens to a particle in superposition the exact instant it is measured?**
+- **A)** It splits into two parallel universes
+- **B)** Its wave function collapses into a single definite state ✅
+- **C)** It loses all mass
+- **D)** It speeds up to the speed of light
+
+---
+💬 *Would you like to explore Quantum Computing or Schrödinger's famous cat thought experiment?* ✨`;
   }
 
   // 4. Formula Cheat Sheet Mode
@@ -202,21 +264,25 @@ const askAI = async (req, res) => {
 
     if (apiKey) {
       try {
-        const systemPrompt = `You are Tyla, an intelligent, encouraging, friendly, and highly conversational universal academic AI study buddy and tutor on TailoredTimes (like ChatGPT, Gemini, and Claude).
-Help students with any topic—from homework doubts, accounting standards, STEM, coding, essay writing, exam preparation, to fun conversational questions.
-Respond warmly, empathetically, and conversationally.
-When explaining concepts, use intuitive real-life analogies, clear step-by-step structure, bullet points, and check in on the student.
-When generating practice quizzes/MCQs, format options as "- **A)** Option text", "- **B)** Option text", etc. with ✅ next to the correct answer.
-Format responses in clean GitHub-style Markdown.`;
+        const systemInstructionText = `You are Tyla, the world's most engaging, brilliant, warm, and interactive AI Study Companion & Tutor on TailoredTimes (crafted with the intelligence and conversational flow of ChatGPT, Gemini 1.5 Pro, and Claude 3.5 Sonnet).
 
-        const contents = [
-          { role: 'user', parts: [{ text: systemPrompt }] },
-          { role: 'model', parts: [{ text: "Hey! I'm Tyla, your AI study buddy. I'm ready to help with warmth, clarity, and precision!" }] }
-        ];
+Your Mission:
+1. Make learning addictive, crystal clear, encouraging, and deeply insightful.
+2. Answer any question across all academic subjects, exams (CA, NEET, JEE, CLAT, SAT, IELTS, TOEFL, UPSC), programming, science, history, business, mathematics, or general curious thoughts.
+3. Use a vibrant, natural, conversational human tone:
+   - Use warm greetings and encouraging affirmations ("Great question!", "Let's break this down together!").
+   - Use simple, intuitive real-world analogies that make complex concepts click in seconds.
+   - Use structured Markdown with bolding for key terms, concise bullet points, and numbered steps.
+   - If writing code, always specify the language in triple backticks and explain step-by-step.
+   - If giving an exam answer or formula, clearly highlight: (1) Core Principle, (2) Step-by-Step Derivation/Application, and (3) Examiner Traps to Avoid.
+   - When asked for a quiz or practice question, provide 2-3 multiple-choice options formatted cleanly with options "- **A)** ...", "- **B)** ...", etc., and specify the correct answer with an explanation.
+   - Always end with an inviting, friendly follow-up question or offer to test/simplify further!`;
+
+        const contents = [];
 
         // Append multi-turn history
         if (Array.isArray(history)) {
-          for (const turn of history) {
+          for (const turn of history.slice(-10)) {
             if (turn && turn.content) {
               contents.push({
                 role: turn.role === 'assistant' ? 'model' : 'user',
@@ -226,8 +292,8 @@ Format responses in clean GitHub-style Markdown.`;
           }
         }
 
-        // Current student turn
-        const currentPrompt = `${context ? 'Article Attached Context: ' + context + '\n' : ''}${question}`;
+        // Current student prompt with context if attached
+        const currentPrompt = `${context ? '[Attached Article / Context: ' + context + ']\n\n' : ''}${question}`;
         contents.push({
           role: 'user',
           parts: [{ text: currentPrompt }]
@@ -239,10 +305,14 @@ Format responses in clean GitHub-style Markdown.`;
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemInstructionText }]
+            },
             contents,
             generationConfig: {
-              temperature: 0.6,
-              maxOutputTokens: 1200
+              temperature: 0.7,
+              topP: 0.95,
+              maxOutputTokens: 1600
             }
           })
         });
@@ -258,7 +328,7 @@ Format responses in clean GitHub-style Markdown.`;
           }
         }
       } catch (geminiError) {
-        console.warn('Gemini API multi-turn call error:', geminiError.message);
+        console.warn('Gemini API call error:', geminiError.message);
       }
     }
 
