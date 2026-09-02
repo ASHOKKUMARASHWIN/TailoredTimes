@@ -42,85 +42,127 @@ const subjectKnowledgeBase = {
   }
 };
 
-function generateAcademicResponse(question, subject = 'students', context = '') {
+/**
+ * Universal Academic Response Generator for Tyla
+ */
+function generateAcademicResponse(question, mode = 'doubt', context = '') {
   const normQ = question.toLowerCase();
-  const subInfo = subjectKnowledgeBase[subject] || subjectKnowledgeBase.students;
-  
-  if (normQ.includes('mcq') || normQ.includes('quiz') || normQ.includes('test me') || normQ.includes('practice question')) {
-    return `### 🎯 High-Yield Practice Questions (${subInfo.name})
 
-**Q1. Conceptual Understanding:**
-Which of the following principles is central to **${question.replace(/\?/g, '')}**?
-- **A)** It operates independently of underlying boundary conditions.
-- **B)** It requires systematic verification of core parameters and statutory/scientific rules. ✅
-- **C)** It is purely theoretical with zero practical exam applications.
-- **D)** It has been deprecated in recent curriculum updates.
+  // 1. Mnemonic / Memory Hook Generator Mode
+  if (mode === 'mnemonic' || normQ.includes('mnemonic') || normQ.includes('acronym') || normQ.includes('remember') || normQ.includes('trick')) {
+    return `### 🧠 Tyla's Memory Mnemonic & Catchy Acronym
 
-> **Answer:** **(B)**
-> **Explanation:** Top examination rubrics test deep first-principles clarity along with edge-case exceptions.
+**📌 Concept to Memorize:**
+*${question}*
+
+${context ? `> **Context:** ${context.slice(0, 160)}...\n` : ''}
+
+**💡 The Golden Acronym / Hook:**
+> **M-A-S-T-E-R**
+> • **M** — **Mechanics:** Understand the core physical/statutory rule first
+> • **A** — **Application:** Identify the input parameters and units
+> • **S** — **Sign & Standards:** Apply governing formulas / Ind AS / Newton / NCERT laws
+> • **T** — **Thresholds:** Check statutory limits or boundary conditions (e.g. $T > 0$, limits)
+> • **E** — **Exceptions:** Remember edge-case exemptions and corner traps
+> • **R** — **Review:** Verify the final units and conclusion
+
+**🎯 Fun Story / Visual Analogy:**
+Think of this concept like a *train switching tracks*:
+- The *locomotive engine* represents the main driving force / law.
+- The *switches* represent statutory exemptions or boundary thresholds.
+- When both align, the train reaches the terminal smoothly without derailment!
+
+**⚡ Quick 10-Second Recall Rule:**
+Whenever this appears in an exam, write down the 3-letter trigger: **[Trigger → Formula → Exception]** before solving!`;
+  }
+
+  // 2. Interactive Live Quiz Mode (MCQ Generator)
+  if (mode === 'quiz' || normQ.includes('mcq') || normQ.includes('quiz') || normQ.includes('test me') || normQ.includes('practice question')) {
+    return `### 🎯 Tyla's Interactive Quiz (Tap an option to test yourself!)
+
+**Q1. Core Principle & Identification:**
+Which of the following statements is **most accurate** regarding **${question.replace(/\?/g, '')}**?
+- **A)** It operates independently of underlying boundary conditions or statutory limits.
+- **B)** It requires systematic verification of governing parameters and edge-case exceptions. ✅
+- **C)** It is purely theoretical with zero practical or exam scoring implications.
+- **D)** It is deprecated in recent syllabus editions.
+
+> **Tyla's Explanation:** Top exam rubrics test deep first-principles clarity along with boundary condition exceptions.
 
 ---
 
-**Q2. Application & Problem-Solving:**
-When presented with a complex multi-part problem on this topic, what is the best procedural approach?
+**Q2. Step-by-Step Problem Solving:**
+When presented with a complex multi-part problem on this topic, what is the best initial step?
 - **A)** Compute numerical results directly without stating formulas
-- **B)** State given boundary values, identify governing standard/theorem, and solve step-by-step ✅
+- **B)** State given boundary values, identify governing standard/law, and solve step-by-step ✅
 - **C)** Skip intermediate working to save time
-- **D)** Guess the closest option
+- **D)** Guess the closest approximate option
 
-> **Answer:** **(B)**
-> **Explanation:** Methodical step marks and formula citation maximize score reliability under exam pressure.`;
+> **Tyla's Explanation:** Methodical step marks and formula citation maximize score reliability under exam pressure.
+
+---
+
+**Q3. Advanced Edge-Case:**
+If a parameter exceeds the standard threshold in this topic, what is the direct consequence?
+- **A)** The governing model requires adjustment for non-linear or statutory divergence. ✅
+- **B)** The calculation defaults to zero automatically.
+- **C)** Marks are awarded only for descriptive text.
+- **D)** No adjustment is required.
+
+> **Tyla's Explanation:** Always check whether boundary thresholds trigger alternative formulas or statutory rules!`;
   }
 
-  if (normQ.includes('formula') || normQ.includes('cheat sheet') || normQ.includes('equation') || normQ.includes('summary')) {
-    return `### 📋 Quick Revision & Formula Cheat Sheet (${subInfo.name})
+  // 3. Formula Cheat Sheet Mode
+  if (mode === 'formulas' || normQ.includes('formula') || normQ.includes('cheat sheet') || normQ.includes('equation') || normQ.includes('summary')) {
+    return `### 📋 Tyla's High-Yield Formula & Rule Cheat Sheet
 
 **1. Core Topic Definition:**
 - **Topic:** ${question}
-- **Subject Domain:** ${subInfo.name}
+- **Applicability:** Universal High-Yield Academic Module
 
-**2. Essential Mathematical / Statutory Formulations:**
+**2. Essential Mathematical / Scientific / Statutory Formulations:**
 \`\`\`text
-• Primary Formulation: Output = Function(Inputs, Constraints)
-• Efficiency / Performance Ratio = [Target Metric / Total Base]
-• Condition for Equilibrium / Compliance: Threshold Criterion >= Statutory Limit
+• Primary Formulation: Output = Function(Inputs, Boundary Constraints)
+• Efficiency / Performance Ratio = [Target Metric / Total Base Metric]
+• Equilibrium / Compliance Condition: Threshold Criterion >= Statutory Limit
 \`\`\`
 
-**3. Three Golden Rules for Top Scores:**
-1. **Double Check Units & Reference Standards:** Always state governing sections or standard units (SI).
+**3. Three Golden Rules for Top Exam Scores:**
+1. **Double Check Units & Reference Standards:** Always state governing sections, SI units, or standard conventions.
 2. **Watch for Negative Constraints:** Read carefully if a question asks for *"Which is INCORRECT"*.
-3. **Mnemonic / Memory Hook:** Remember: *Definition → Governing Mechanism → Boundary Exception*.`;
+3. **Mnemonic Hook:** Remember: *Definition → Governing Mechanism → Boundary Exception*.`;
   }
 
-  return `### 🎓 Tyla's Academic Explanation (${subInfo.name})
+  // 4. Default: Comprehensive Step-by-Step Doubt Solver Mode
+  return `### 🎓 Tyla's Academic Explanation
 
 **📌 Query Breakdown:**
 *${question.trim().endsWith('?') ? question : question + '?'}*
 
 **1. Core Theory & Foundation:**
-In **${subInfo.name}**, this concept forms a vital building block. Questions testing this area look for both theoretical precision and practical problem-solving ability.
+At its foundation, this topic connects core theoretical principles with practical exam applications. Mastering it requires understanding the structural mechanics from first principles.
 
 ${context ? `> **Referenced Article Context:** ${context.slice(0, 180)}...\n` : ''}
 
-**2. Key Steps & Mechanics:**
-• **Step 1:** Establish what is given and state applicable standards, laws, or physics/math equations.
-• **Step 2:** Break complex problems into smaller sub-components to prevent calculation and conceptual slip-ups.
-• **Step 3:** Review boundary conditions or edge cases (e.g., zero denominators, exempt statutory categories).
+**2. Step-by-Step Breakdown & Mechanics:**
+• **Step 1 (Groundwork):** Identify the governing parameters and what the examiner is specifically evaluating.
+• **Step 2 (Execution):** Apply the systematic method—whether deriving equations, calculating statutory figures, or analyzing conceptual nuance.
+• **Step 3 (Edge Cases):** Pay special attention to exceptions. Examiners frequently design tricky questions around boundary conditions where standard rules alter.
 
 **3. Common Examiner Traps to Avoid:**
-⚠️ **Trap 1:** Confusing similar-sounding terms or applying theorems outside their valid domain.
-⚠️ **Trap 2:** Overlooking assumptions (e.g., ideal gas, arm's length price, constant friction).
+⚠️ **Trap 1:** Memorizing formulas without understanding their derivations or limits of applicability.
+⚠️ **Trap 2:** Overlooking assumptions or negative constraints (e.g. *"Which of the following is NOT true"*).
 
-**4. Exam Scoring Strategy:**
-Present your working clearly with labeled steps. On multiple-choice questions, eliminate the two most obviously flawed options first before choosing the best answer.
+**4. Scoring Strategy:**
+Present your working clearly with labeled steps. On multiple-choice questions, eliminate the two most obviously flawed options first before selecting your final answer.
 
 ---
-💡 *Want practice MCQs, a step-by-step formula breakdown, or a simplified analogy? Just ask Tyla!*`;
+💡 *Want an interactive practice quiz, a formula cheat sheet, or a catchy memory mnemonic? Just ask Tyla!*`;
 }
 
 const askAI = async (req, res) => {
   try {
-    const { question, subject = 'students', context = '' } = req.body;
+    const { question, mode = 'doubt', context = '' } = req.body;
 
     if (!question || !question.trim()) {
       return res.status(400).json({ message: 'Question is required' });
@@ -130,15 +172,13 @@ const askAI = async (req, res) => {
 
     if (apiKey) {
       try {
-        const subInfo = subjectKnowledgeBase[subject] || subjectKnowledgeBase.students;
-        const systemPrompt = `${subInfo.promptContext}
-You are Tyla, an intelligent, encouraging, friendly, and highly precise academic AI tutor on TailoredTimes.
-Help students clear doubts with step-by-step explanations, clear headings, formulas, and exam tips.
+        const systemPrompt = `You are Tyla, an intelligent, encouraging, friendly, and highly precise universal academic AI study mentor on TailoredTimes.
+Help students clear doubts across any subject (CA, NEET, JEE, SAT, IELTS, TOEFL, STEM, Humanities, Law, and General Studies).
+Provide step-by-step explanations, clear headings, formulas, and exam tips.
+When generating MCQs, format options as "- **A)** Option", "- **B)** Option", etc. and include ✅ on the correct answer.
 Format responses in clean GitHub-style Markdown.`;
 
-        const userPrompt = `Subject: ${subInfo.name}
-${context ? 'Article Context: ' + context + '\n' : ''}
-Student Question: ${question}`;
+        const userPrompt = `${context ? 'Article Context: ' + context + '\n' : ''}Mode: ${mode}\nStudent Question: ${question}`;
 
         const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         
@@ -162,7 +202,6 @@ Student Question: ${question}`;
           if (replyText) {
             return res.json({
               answer: replyText,
-              subject,
               source: 'gemini-ai'
             });
           }
@@ -172,16 +211,15 @@ Student Question: ${question}`;
       }
     }
 
-    const localAnswer = generateAcademicResponse(question, subject, context);
+    const localAnswer = generateAcademicResponse(question, mode, context);
     return res.json({
       answer: localAnswer,
-      subject,
-      source: 'academic-tutor-engine'
+      source: 'tyla-academic-engine'
     });
 
   } catch (error) {
     console.error('AI Controller Error:', error);
-    res.status(500).json({ message: 'Error processing AI doubt request', error: error.message });
+    res.status(500).json({ message: 'Error processing doubt request', error: error.message });
   }
 };
 
