@@ -2451,20 +2451,22 @@ function closeModal() {
 }
 
 function formatTimeAgo(dateStr) {
-  if (!dateStr) return 'Unknown';
+  if (!dateStr) return 'Recent';
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return 'Recent';
   const now = new Date();
   const diffInSeconds = Math.floor((now - date) / 1000);
   
-  if (diffInSeconds < 60) return 'Just now';
+  if (diffInSeconds < 60) return '⚡ Just now';
   const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+  if (diffInMinutes < 60) return `⏱️ ${diffInMinutes}m ago`;
   const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+  if (diffInHours < 24) return `🕒 ${diffInHours}h ago`;
   const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+  if (diffInDays === 1) return `📅 Yesterday (${diffInHours}h ago)`;
+  if (diffInDays <= 2) return `📅 2 days ago`;
   
-  return date.toLocaleDateString();
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function debounce(func, wait) {
