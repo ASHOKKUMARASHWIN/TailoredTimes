@@ -119,10 +119,24 @@ const getFeed = async (req, res) => {
     const dedupMap = new Map();
     enriched.forEach(a => { if (a && a.url && a.title) dedupMap.set(a.url, a); });
     let unique = Array.from(dedupMap.values());
-    unique.forEach(a => { a.score = scorer.scoreArticle(a, scoringUser); });
-    unique.sort((a, b) => (b.score - a.score) || (new Date(b.publishedAt) - new Date(a.publishedAt)));
 
-    const outputArticles = unique;
+    // Past 2 Days (48 Hours) filter & Reverse Chronological Sorting (Newest right now -> Past 2 Days)
+    const now = Date.now();
+    const fortyEightHoursAgo = now - (48 * 60 * 60 * 1000);
+    
+    let validArticles = unique.filter(a => {
+      const p = new Date(a.publishedAt).getTime();
+      return !isNaN(p) && p >= fortyEightHoursAgo;
+    });
+
+    if (validArticles.length < 15) {
+      validArticles = unique;
+    }
+
+    // Sort strictly in order: newest right now down to past 2 days
+    validArticles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+    const outputArticles = validArticles;
 
     // Cache in DB if available
     if (mongoose.connection.readyState === 1 && outputArticles.length > 0) {
@@ -246,6 +260,7 @@ const getMyCountriesFeed = async (req, res) => {
     const combinedMap = new Map();
     interleaved.forEach(a => { if (a.url) combinedMap.set(a.url, a); });
     let finalArticles = Array.from(combinedMap.values());
+    finalArticles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
     const skip = (page - 1) * limit;
     let pageArticles = finalArticles.slice(skip, skip + limit);
@@ -289,10 +304,19 @@ const getWorldNews = async (req, res) => {
 
     const map = new Map();
     articles.forEach(a => { if (a && a.url) map.set(a.url, a); });
-    const unique = Array.from(map.values());
-    unique.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    let unique = Array.from(map.values());
 
-    let result = unique.slice(0, 30);
+    // Filter to past 2 days and sort strictly newest first
+    const now = Date.now();
+    const fortyEightHoursAgo = now - (48 * 60 * 60 * 1000);
+    let validArticles = unique.filter(a => {
+      const p = new Date(a.publishedAt).getTime();
+      return !isNaN(p) && p >= fortyEightHoursAgo;
+    });
+    if (validArticles.length < 10) validArticles = unique;
+    validArticles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+    let result = validArticles.slice(0, 35);
     result = await imageScraper.enrichArticlesWithImages(result);
     res.json({ articles: result });
   } catch (error) {
@@ -371,23 +395,18 @@ const getCategoryFeed = async (req, res) => {
     articles.forEach(a => { if (a && a.url) map.set(a.url, a); });
     let unique = Array.from(map.values());
 
-    // Score & Sort
-    const scoringUser = {
-      countries: targetCountries,
-      interests: [normCat],
-      profession: user.profession || '',
-      preferredSources: []
-    };
-    unique.forEach(a => { a.score = scorer.scoreArticle(a, scoringUser); });
-    unique.sort((a, b) => (b.score - a.score) || (new Date(b.publishedAt) - new Date(a.publishedAt)));
-
-    // 24-Hour filter
+    // Filter to past 2 days & sort strictly from now to past 2 days
     const now = Date.now();
-    const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
     const fortyEightHoursAgo = now - (48 * 60 * 60 * 1000);
-    const r24 = unique.filter(a => new Date(a.publishedAt).getTime() >= twentyFourHoursAgo);
-    const finalArticles = (r24.length >= 8) ? r24 : unique.filter(a => new Date(a.publishedAt).getTime() >= fortyEightHoursAgo);
-    const outputArticles = (finalArticles.length > 0) ? finalArticles : unique;
+    let validArticles = unique.filter(a => {
+      const p = new Date(a.publishedAt).getTime();
+      return !isNaN(p) && p >= fortyEightHoursAgo;
+    });
+    if (validArticles.length < 15) validArticles = unique;
+
+    // Strict chronological descending order
+    validArticles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    const outputArticles = validArticles;
 
     const skip = (page - 1) * limit;
     let pageArticles = outputArticles.slice(skip, skip + limit);
