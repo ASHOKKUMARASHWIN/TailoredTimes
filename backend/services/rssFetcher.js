@@ -247,6 +247,9 @@ function parseFeedXml(xmlText, defaultCountry = 'WORLD', defaultCategory = 'worl
 
     const finalImage = img || null;
 
+    let parsedDate = rawPubDate ? new Date(rawPubDate) : new Date();
+    if (isNaN(parsedDate.getTime())) parsedDate = new Date();
+
     if (title && link) {
       articles.push({
         title,
@@ -257,7 +260,7 @@ function parseFeedXml(xmlText, defaultCountry = 'WORLD', defaultCategory = 'worl
         country: defaultCountry,
         category: defaultCategory,
         url: link,
-        publishedAt: rawPubDate ? new Date(rawPubDate) : new Date()
+        publishedAt: parsedDate
       });
     }
   }
