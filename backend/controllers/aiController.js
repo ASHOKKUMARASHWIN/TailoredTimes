@@ -118,28 +118,228 @@ You are fully capable of mastering this. What specific topic are we tackling rig
     return `Take care and great job learning today! 👋 Get some good rest, and I'll be right here whenever you want to chat or study again. Have a fantastic day! ⭐`;
   }
 
-  // 8. Math & Calculation Parser (e.g. "what is 25 * 4", "solve 2x + 5 = 15")
-  const mathMatch = cleanQ.match(/(\d+(?:\.\d+)?)\s*([\+\-\*\/xX\^])\s*(\d+(?:\.\d+)?)/);
-  if (mathMatch && (normQ.includes('what is') || normQ.includes('calculate') || normQ.includes('solve') || cleanQ.length < 20)) {
-    const n1 = parseFloat(mathMatch[1]);
-    const op = mathMatch[2];
-    const n2 = parseFloat(mathMatch[3]);
-    let result = 0;
-    let opSymbol = op;
-    if (op === '+' ) result = n1 + n2;
-    else if (op === '-') result = n1 - n2;
-    else if (op === '*' || op === 'x' || op === 'X') { result = n1 * n2; opSymbol = '×'; }
-    else if (op === '/') { result = n2 !== 0 ? (n1 / n2) : 'Undefined (cannot divide by zero)'; opSymbol = '÷'; }
-    else if (op === '^') { result = Math.pow(n1, n2); opSymbol = '^'; }
+  // 8. Comprehensive Mathematical & Arithmetical Computational Engine
+  // A. Percentage Calculation (e.g. "what is 18% of 2500", "20% off 1500")
+  const pctMatch = cleanQ.match(/(\d+(?:\.\d+)?)\s*(?:%|percent)\s*(?:of)\s*(\d+(?:\.\d+)?)/i) || cleanQ.match(/(?:what is\s*)?(\d+(?:\.\d+)?)\s*%\s*(?:of\s*)?(\d+(?:\.\d+)?)/i);
+  if (pctMatch) {
+    const rate = parseFloat(pctMatch[1]);
+    const base = parseFloat(pctMatch[2]);
+    const val = Math.round(((rate / 100) * base) * 10000) / 10000;
+    return `### 🧮 Percentage Calculation Solution
 
-    return `### 🧮 Calculation Solution
+$$\\mathbf{${rate}\\% \\text{ of } ${base} = ${val}}$$
 
-$$\\mathbf{${n1} ${opSymbol} ${n2} = ${result}}$$
+---
 
-• **Input Expression:** $${n1} ${opSymbol} ${n2}$
-• **Calculated Result:** **${result}**
+### 📝 Step-by-Step Working:
+• **Governing Formula:** $\\text{Result} = \\left(\\frac{\\text{Percentage}}{100}\\right) \\times \\text{Base Number}$
+• **Step 1 (Convert to Decimal):** $\\frac{${rate}}{100} = ${rate / 100}$
+• **Step 2 (Multiply with Base):** $${rate / 100} \\times ${base} = \\mathbf{${val}}$
 
-*Need me to solve a larger equation, quadratic formula, or step-by-step calculus derivative? Just send it over!* 📐`;
+---
+💡 **Tyla's Tip:** To quickly find $18\\%$ in your head, take $10\\%$ (shift decimal left once) + $10\\%$ - $2\\%$! Need another calculation? Just ask! 😊`;
+  }
+
+  // B. Factorial Calculation (e.g. "5!", "factorial of 7")
+  const factMatch = cleanQ.match(/(\d+)\s*!/i) || cleanQ.match(/factorial\s*(?:of)?\s*(\d+)/i);
+  if (factMatch) {
+    const n = parseInt(factMatch[1]);
+    if (n >= 0 && n <= 25) {
+      let f = 1;
+      const terms = [];
+      for (let i = n; i >= 1; i--) { f *= i; terms.push(i); }
+      return `### 🔢 Factorial Calculation Solution
+
+$$\\mathbf{${n}! = ${f.toLocaleString()}}$$
+
+---
+
+### 📝 Step-by-Step Expansion:
+• **Mathematical Definition:** $n! = n \\times (n-1) \\times (n-2) \\times \\dots \\times 1$
+• **Expanded Product:** $${n}! = ${terms.join(' \\times ') || '1'}$
+• **Exact Calculated Value:** **${f.toLocaleString()}**
+
+---
+💡 **Tyla's Tip:** Factorials grow extremely fast ($10! = 3,628,800$). They form the basis of permutations ($^nP_r$) and combinations ($^nC_r$) in probability!`;
+    }
+  }
+
+  // C. Square Root & Cube Root (e.g. "sqrt(144)", "square root of 625", "cube root of 125")
+  const cbrtMatch = cleanQ.match(/(?:cbrt|cube root).*?(\d+(?:\.\d+)?)/i);
+  if (cbrtMatch) {
+    const num = parseFloat(cbrtMatch[1]);
+    const root = Math.cbrt(num);
+    const rounded = Math.round(root * 1000000) / 1000000;
+    return `### 📐 Cube Root Solution
+
+$$\\mathbf{\\sqrt[3]{${num}} = ${rounded}}$$
+
+---
+
+### 📝 Step-by-Step Verification:
+• **Given Value:** $x = ${num}$
+• **Principal Cube Root:** $\\sqrt[3]{${num}} = \\mathbf{${rounded}}$
+• **Check:** $(${rounded})^3 = ${Math.round(Math.pow(rounded, 3) * 10000) / 10000} \\approx ${num}$`;
+  }
+
+  const sqrtMatch = cleanQ.match(/(?:sqrt|square root).*?(\d+(?:\.\d+)?)/i);
+  if (sqrtMatch) {
+    const num = parseFloat(sqrtMatch[1]);
+    const root = Math.sqrt(num);
+    const rounded = Math.round(root * 1000000) / 1000000;
+    return `### 📐 Square Root Solution
+
+$$\\mathbf{\\sqrt{${num}} = ${rounded}}$$
+
+---
+
+### 📝 Step-by-Step Verification:
+• **Given Number:** $x = ${num}$
+• **Principal Square Root:** $\\sqrt{${num}} = \\mathbf{${rounded}}$
+• **Check:** $(${rounded})^2 = ${Math.round((rounded * rounded) * 10000) / 10000} = ${num}$`;
+  }
+
+  // D. Quadratic Equations (e.g. "solve x^2 - 5x + 6 = 0", "2x^2 + 5x - 3 = 0")
+  const quadMatch = cleanQ.match(/(?:solve\s*)?([+-]?\s*\d*(?:\.\d+)?)\s*([a-zA-Z])\^2\s*([+-]\s*\d*(?:\.\d+)?)\s*\2\s*([+-]\s*\d+(?:\.\d+)?)\s*=\s*0/i);
+  if (quadMatch) {
+    let aStr = quadMatch[1].replace(/\s+/g, '');
+    let a = aStr === '' || aStr === '+' ? 1 : (aStr === '-' ? -1 : parseFloat(aStr));
+    const variable = quadMatch[2];
+    let bStr = quadMatch[3].replace(/\s+/g, '');
+    let b = bStr === '' || bStr === '+' ? 1 : (bStr === '-' ? -1 : parseFloat(bStr));
+    const c = parseFloat(quadMatch[4].replace(/\s+/g, ''));
+
+    const D = (b * b) - (4 * a * c);
+    let rootsLatex = '';
+    let rootsSummary = '';
+    if (D > 0) {
+      const r1 = Math.round(((-b + Math.sqrt(D)) / (2 * a)) * 10000) / 10000;
+      const r2 = Math.round(((-b - Math.sqrt(D)) / (2 * a)) * 10000) / 10000;
+      rootsLatex = `${variable}_1 = ${r1},\\quad ${variable}_2 = ${r2}`;
+      rootsSummary = `Two Distinct Real Roots: **${variable} = ${r1}** and **${variable} = ${r2}**`;
+    } else if (D === 0) {
+      const r = Math.round((-b / (2 * a)) * 10000) / 10000;
+      rootsLatex = `${variable} = ${r}\\quad \\text{(Repeated Root)}`;
+      rootsSummary = `One Real Repeated Root: **${variable} = ${r}**`;
+    } else {
+      const real = (-b / (2 * a)).toFixed(3);
+      const imag = (Math.sqrt(-D) / (2 * a)).toFixed(3);
+      rootsLatex = `${variable} = ${real} \\pm ${Math.abs(imag)}i\\quad \\text{(Complex Roots)}`;
+      rootsSummary = `Two Complex Conjugate Roots: **${variable} = ${real} ± ${Math.abs(imag)}i**`;
+    }
+
+    return `### 📐 Quadratic Algebraic Solution
+
+$$\\mathbf{${rootsLatex}}$$
+
+---
+
+### 📝 Step-by-Step Derivation:
+• **Standard Form:** $ax^2 + bx + c = 0 \\implies (${a})${variable}^2 + (${b})${variable} + (${c}) = 0$
+• **Discriminant Calculation:** $D = b^2 - 4ac = (${b})^2 - 4(${a})(${c}) = ${b*b} - ${4*a*c} = \\mathbf{${D}}$
+• **Quadratic Formula:** $${variable} = \\frac{-b \\pm \\sqrt{D}}{2a} = \\frac{-(${b}) \\pm \\sqrt{${D}}}{2(${a})}$
+• **Final Solution:** ${rootsSummary}
+
+---
+💡 **Tyla's Tip:** Since Discriminant $D ${D > 0 ? '> 0' : (D === 0 ? '= 0' : '< 0')}$, the parabola intersects the x-axis ${D > 0 ? 'at two points' : (D === 0 ? 'at exactly one vertex' : 'zero times in real space')}.`;
+  }
+
+  // E. Linear Equations (e.g. "solve 3x + 12 = 45", "5x - 20 = 80")
+  const linMatch = cleanQ.match(/(?:solve\s*)?([+-]?\s*\d*(?:\.\d+)?)\s*([a-zA-Z])\s*([+-]\s*\d+(?:\.\d+)?)\s*=\s*([+-]?\s*\d+(?:\.\d+)?)/i);
+  if (linMatch && !cleanQ.includes('^')) {
+    let aStr = linMatch[1].replace(/\s+/g, '');
+    let a = aStr === '' || aStr === '+' ? 1 : (aStr === '-' ? -1 : parseFloat(aStr));
+    const variable = linMatch[2];
+    const b = parseFloat(linMatch[3].replace(/\s+/g, ''));
+    const c = parseFloat(linMatch[4].replace(/\s+/g, ''));
+    if (!isNaN(a) && a !== 0) {
+      const cMinusB = c - b;
+      const x = Math.round((cMinusB / a) * 10000) / 10000;
+      return `### 📐 Linear Algebraic Solution
+
+$$\\mathbf{${variable} = ${x}}$$
+
+---
+
+### 📝 Step-by-Step Working:
+• **Given Equation:** $${a === 1 ? '' : (a === -1 ? '-' : a)}${variable} ${b >= 0 ? '+ ' + b : '- ' + Math.abs(b)} = ${c}$
+• **Step 1 (Isolate ${variable} term):** $${a === 1 ? '' : (a === -1 ? '-' : a)}${variable} = ${c} - (${b}) = ${cMinusB}$
+• **Step 2 (Divide both sides by ${a}):** $${variable} = \\frac{${cMinusB}}{${a}} = \\mathbf{${x}}$
+
+---
+💡 **Tyla's Verification:** Substitute $${variable} = ${x}$ back: $${a}(${x}) + (${b}) = ${a * x + b} = ${c}$ ✅`;
+    }
+  }
+
+  // F. Financial Math: Simple Interest & Compound Interest (e.g. "simple interest principal 10000 rate 8 time 3")
+  const siMatch = cleanQ.match(/(?:simple interest|si).*?(?:p|principal|of|for)?\s*[:=]?\s*(\d+(?:\.\d+)?).*?(?:r|rate)?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%.*?(?:t|time|years)?\s*[:=]?\s*(\d+(?:\.\d+)?)/i);
+  if (siMatch) {
+    const P = parseFloat(siMatch[1]);
+    const R = parseFloat(siMatch[2]);
+    const T = parseFloat(siMatch[3]);
+    const SI = (P * R * T) / 100;
+    const total = P + SI;
+    return `### 💰 Simple Interest Calculation
+
+$$\\mathbf{SI = \\frac{P \\times R \\times T}{100} = \\frac{${P} \\times ${R} \\times ${T}}{100} = ${SI.toLocaleString()}}$$
+
+---
+
+### 📝 Financial Breakdown:
+• **Principal Amount ($P$):** $${P.toLocaleString()}$
+• **Annual Interest Rate ($R$):** $${R}\\%$
+• **Time Horizon ($T$):** $${T}$ years
+• **Total Interest Earned ($SI$):** **$${SI.toLocaleString()}**
+• **Total Maturity Amount ($A = P + SI$):** **$${total.toLocaleString()}**`;
+  }
+
+  // G. Statistics: Average / Mean of a number list (e.g. "average of 12, 18, 25, 35, 10")
+  const avgMatch = cleanQ.match(/(?:average|mean)\s*(?:of)?\s*([\d\s,\.]+)/i);
+  if (avgMatch && avgMatch[1].includes(',')) {
+    const numbers = avgMatch[1].split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (numbers.length >= 2) {
+      const sum = numbers.reduce((a, b) => a + b, 0);
+      const avg = Math.round((sum / numbers.length) * 10000) / 10000;
+      return `### 📊 Statistical Mean / Average Solution
+
+$$\\mathbf{\\bar{x} = \\frac{\\sum x_i}{N} = \\frac{${sum}}{${numbers.length}} = ${avg}}$$
+
+---
+
+### 📝 Step-by-Step Calculation:
+• **Given Dataset ($N = ${numbers.length}$):** $[${numbers.join(', ')}]$
+• **Sum of Elements ($\\sum x_i$):** $${numbers.join(' + ')} = \\mathbf{${sum}}$
+• **Calculated Mean ($\\bar{x}$):** $\\frac{${sum}}{${numbers.length}} = \\mathbf{${avg}}$`;
+    }
+  }
+
+  // H. General Arithmetic & Multi-term BODMAS / Powers (e.g. "(120 + 80) * 15 / 5 - 25", "45 * 12", "9800 / 25", "2^10")
+  const isMathQuery = normQ.includes('calculate') || normQ.includes('what is') || normQ.includes('solve') || normQ.includes('evaluate') || /[\d\+\-\*\/\^]/.test(cleanQ);
+  if (isMathQuery) {
+    const mathExpr = cleanQ.replace(/^(what is|calculate|solve|find|evaluate)\s+/i, '').replace(/\?/g, '').trim();
+    const sanitized = mathExpr.replace(/x/gi, '*').replace(/\^/g, '**').replace(/[^\d\+\-\*\/\.\(\)\s]/g, '');
+    if (sanitized && /\d/.test(sanitized) && /[\+\-\*\/\*]/.test(sanitized)) {
+      try {
+        const fn = new Function('return ' + sanitized);
+        const res = fn();
+        if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+          const formattedRes = Math.round(res * 1000000) / 1000000;
+          return `### 🧮 Mathematical & Arithmetical Solution
+
+$$\\mathbf{${mathExpr} = ${formattedRes.toLocaleString()}}$$
+
+---
+
+### 📝 Step-by-Step Order of Operations (BODMAS / PEMDAS):
+• **Expression:** \`${mathExpr}\`
+• **Precedence Order:** **B**rackets $\\rightarrow$ **O**rders/Exponents $\\rightarrow$ **D**ivision & **M**ultiplication $\\rightarrow$ **A**ddition & **S**ubtraction
+• **Final Computed Value:** **${formattedRes.toLocaleString()}**
+
+---
+💬 *Need me to compute another equation, solve calculus derivatives, or calculate statistics? Just ask!* 📐`;
+        }
+      } catch(e) {}
+    }
   }
 
   // 9. Interactive Practice Quiz Mode
