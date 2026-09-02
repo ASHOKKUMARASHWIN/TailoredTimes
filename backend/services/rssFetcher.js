@@ -75,6 +75,59 @@ function parseTitleAndSource(rawTitle) {
   return { title, source };
 }
 
+const CATEGORY_EDITORIAL_IMAGES = {
+  technology: [
+    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=80'
+  ],
+  business: [
+    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80'
+  ],
+  science: [
+    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80'
+  ],
+  sports: [
+    'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80'
+  ],
+  education: [
+    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80'
+  ],
+  world: [
+    'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80'
+  ]
+};
+
+function getResilientEditorialPhoto(title, category = 'world') {
+  const cat = (category || 'world').toLowerCase();
+  const pool = CATEGORY_EDITORIAL_IMAGES[cat] || CATEGORY_EDITORIAL_IMAGES.world;
+  let hash = 0;
+  for (let i = 0; i < (title || '').length; i++) {
+    hash = ((hash << 5) - hash + title.charCodeAt(i)) | 0;
+  }
+  const idx = Math.abs(hash) % pool.length;
+  return pool[idx];
+}
+
 function parseFeedXml(xmlText, defaultCountry = 'WORLD', defaultCategory = 'world', defaultSource = null) {
   const articles = [];
   const items = xmlText.match(/<item[\s\S]*?<\/item>/gi) || [];
@@ -84,30 +137,41 @@ function parseFeedXml(xmlText, defaultCountry = 'WORLD', defaultCategory = 'worl
     const rawLink = (item.match(/<link[\s\S]*?>([\s\S]*?)<\/link>/i) || [])[1] || '';
     const rawPubDate = (item.match(/<pubDate[\s\S]*?>([\s\S]*?)<\/pubDate>/i) || [])[1] || '';
     const rawDesc = (item.match(/<description[\s\S]*?>([\s\S]*?)<\/description>/i) || [])[1] || '';
+    const rawContent = (item.match(/<content:encoded[\s\S]*?>([\s\S]*?)<\/content:encoded>/i) || [])[1] || '';
     const rawSource = (item.match(/<source[\s\S]*?>([\s\S]*?)<\/source>/i) || [])[1] || '';
 
-    // Extract Image
-    let img = (item.match(/<media:(?:content|thumbnail)[^>]+url="([^"]+)"/i) || [])[1] ||
-              (item.match(/<enclosure[^>]+url="([^"]+)"/i) || [])[1] || null;
+    // Advanced Multi-Source Image Extraction
+    let img = (item.match(/<media:(?:content|thumbnail)[^>]+url=["']([^"']+)["']/i) || [])[1] ||
+              (item.match(/<enclosure[^>]+url=["']([^"']+)["']/i) || [])[1] || null;
 
     if (!img) {
-      const imgMatch = rawDesc.match(/<img[^>]+src=["']([^"'>]+)["']/i);
+      // Check for <img src="..." in description or content:encoded
+      const combinedHtml = rawContent + ' ' + rawDesc;
+      const imgMatch = combinedHtml.match(/<img[^>]+src=["']([^"'>]+)["']/i);
       if (imgMatch) img = imgMatch[1];
     }
 
-    if (img && (img.includes('feedburner') || img.includes('1x1') || img.includes('pixel'))) {
-      img = null;
+    // Clean & validate extracted image URL
+    if (img) {
+      img = img.replace(/&amp;/g, '&').trim();
+      if (img.startsWith('//')) img = 'https:' + img;
+      if (img.includes('1x1') || img.includes('pixel') || img.includes('feedburner') || img.includes('spacer.gif') || !img.startsWith('http')) {
+        img = null;
+      }
     }
 
     const { title, source: extractedSource } = parseTitleAndSource(rawTitle);
     const finalSource = cleanHtml(rawSource) || (defaultSource ? defaultSource.name : (extractedSource || 'Global News'));
     const link = cleanHtml(rawLink);
 
+    // If no direct image from RSS, assign high-resolution editorial photo
+    const finalImage = img || getResilientEditorialPhoto(title, defaultCategory);
+
     if (title && link) {
       articles.push({
         title,
         description: cleanHtml(rawDesc).slice(0, 350),
-        image: img || null,
+        image: finalImage,
         source: finalSource,
         sourceId: defaultSource ? defaultSource.id : 'gnews-live',
         country: defaultCountry,
