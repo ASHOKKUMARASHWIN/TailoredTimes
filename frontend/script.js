@@ -1505,11 +1505,12 @@ function renderArticles(articles, append = false) {
           <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: auto;">${article.source || 'News'}</span>
         </div>
         <h3 class="card-title">${article.title || ''}</h3>
-        ${(currentFormat === '5min' || currentFormat === 'detailed' || !insights) ? `<p class="card-desc">${article.description || 'Click to read full story...'}</p>` : ''}
-        ${formatBoxHtml}
         <div class="card-footer">
           <span class="time">${formatTimeAgo(article.publishedAt)}</span>
           <div class="card-actions">
+            <button class="btn-card-ask-tyla" onclick="openAIDoubtForArticle('', '${cleanTitle.replace(/'/g, "\\'")}', '${cleanDesc.replace(/'/g, "\\'")}', 'students')" title="Ask Tyla about this story">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Tyla
+            </button>
             <button class="save-btn ${isArticleSaved ? 'saved' : ''}">${isArticleSaved ? '♥ Saved' : '♡ Save'}</button>
             <a class="read-btn" href="${article.url || '#'}" target="_blank" rel="noopener noreferrer">READ ↗</a>
           </div>
@@ -2624,15 +2625,28 @@ async function submitAIDoubt() {
 
     const answer = data.answer || 'I am ready to help you. Could you rephrase your question?';
     
-    // Format response HTML
+    // Format response HTML with interactive elements
     const formattedAnswer = renderMarkdownToHTML(answer);
 
     const botMsgEl = document.createElement('div');
     botMsgEl.className = 'ai-message ai-msg-bot';
+    
+    // Generate contextual dynamic follow-up chips
+    const followUpChips = getDynamicFollowUpChips(question, aiState.activeSubject);
+
     botMsgEl.innerHTML = `
       <div class="msg-bubble">
         ${formattedAnswer}
-        <button class="btn-copy-ai-msg" onclick="copyAIText(this)"><i class="fa-regular fa-copy"></i> Copy Solution</button>
+        <div class="msg-interactive-toolbar">
+          <button class="btn-interactive-action" onclick="copyAIText(this)"><i class="fa-regular fa-copy"></i> Copy Solution</button>
+          <button class="btn-interactive-action" onclick="toggleTylaSpeech(this)"><i class="fa-solid fa-volume-high"></i> Listen to Tyla</button>
+        </div>
+      </div>
+      <div class="msg-follow-ups">
+        <span class="follow-up-label">Suggested by Tyla:</span>
+        <div class="follow-up-pills">
+          ${followUpChips.map(chip => `<button class="follow-up-pill" onclick="sendQuickPrompt('${chip.prompt.replace(/'/g, "\\'")}')">${chip.label}</button>`).join('')}
+        </div>
       </div>
       <span class="msg-time">Tyla ✦ AI Tutor</span>
     `;
@@ -2656,6 +2670,30 @@ async function submitAIDoubt() {
   }
 }
 
+function getDynamicFollowUpChips(userQ, subject) {
+  const norm = userQ.toLowerCase();
+  if (norm.includes('mcq') || norm.includes('quiz')) {
+    return [
+      { label: '🧮 Give more challenging MCQs', prompt: 'Give me 3 more advanced high-difficulty practice MCQs on this.' },
+      { label: '📋 Show key formula summary', prompt: 'What are the key formulas and laws for this topic?' },
+      { label: '💡 Real-world case study', prompt: 'Show me a real-world case study or practical application of this.' }
+    ];
+  }
+  if (norm.includes('formula') || norm.includes('cheat sheet')) {
+    return [
+      { label: '🎯 Test me on these formulas', prompt: 'Test me with 3 calculation-based practice questions using these formulas.' },
+      { label: '⚠️ What mistakes happen in exams?', prompt: 'What are the common exam calculation mistakes and traps students make here?' },
+      { label: '💡 Step-by-step derivation', prompt: 'Show the step-by-step derivation of the primary equation.' }
+    ];
+  }
+  return [
+    { label: '💡 Explain with simple analogy', prompt: 'Can you explain this with an ultra-simple real-world analogy?' },
+    { label: '🎯 Test me with 3 MCQs', prompt: 'Give me 3 high-yield practice MCQs with detailed explanations on this topic.' },
+    { label: '📋 Formula cheat sheet', prompt: 'Give me the quick formula sheet and core rules for this topic.' },
+    { label: '⚠️ Common exam traps', prompt: 'What are the most common exam traps and mistakes students make on this?' }
+  ];
+}
+
 function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, 
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
@@ -2671,33 +2709,122 @@ function renderMarkdownToHTML(md) {
   // Italic
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
   // Headers
-  html = html.replace(/^### (.*$)/gim, '<h3 style="color: var(--accent); margin: 8px 0 4px 0; font-size: 15px;">$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2 style="color: var(--accent); margin: 10px 0 6px 0; font-size: 16px;">$1</h2>');
+  html = html.replace(/^### (.*$)/gim, '<h3 style="color: var(--accent); margin: 10px 0 6px 0; font-size: 15px; font-weight: 800;">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 style="color: var(--accent); margin: 12px 0 8px 0; font-size: 16px; font-weight: 800;">$1</h2>');
   // Blockquotes
-  html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+  html = html.replace(/^> (.*$)/gim, '<blockquote class="ai-blockquote">$1</blockquote>');
   // Code Blocks
-  html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, '<pre><code>$2</code></pre>');
+  html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, '<pre class="ai-code-block"><code>$2</code></pre>');
   // Inline Code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>');
+  
+  // Interactive MCQ Options Detection: converts - **A)** ... ✅ into interactive buttons!
+  html = html.replace(/^[•\-\*] <strong>([A-D]\))<\/strong> (.*?)(?: (✅))?$/gim, (match, optLetter, optText, isCorrect) => {
+    const correctFlag = isCorrect ? 'true' : 'false';
+    const cleanText = optText.replace('✅', '').trim();
+    return `<button class="interactive-quiz-opt" data-correct="${correctFlag}" onclick="handleQuizOptionClick(this)">
+      <span class="quiz-opt-letter">${optLetter}</span>
+      <span class="quiz-opt-text">${cleanText}</span>
+    </button>`;
+  });
+
   // Bullet lists
-  html = html.replace(/^[•\-\*] (.*$)/gim, '<li>$1</li>');
+  html = html.replace(/^[•\-\*] (.*$)/gim, '<li class="ai-bullet-li">$1</li>');
   // Numbered lists
-  html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+  html = html.replace(/^\d+\. (.*$)/gim, '<li class="ai-bullet-li">$1</li>');
   // Line breaks
   html = html.replace(/\n/g, '<br>');
 
   return html;
 }
 
+// Interactive Quiz Option Click Handler
+function handleQuizOptionClick(btn) {
+  const isCorrect = btn.getAttribute('data-correct') === 'true';
+  const parentBubble = btn.closest('.msg-bubble');
+  
+  // Disable options in this question block
+  const allOpts = parentBubble.querySelectorAll('.interactive-quiz-opt');
+  
+  if (isCorrect) {
+    btn.classList.add('correct');
+    btn.innerHTML += ' <span class="quiz-badge correct-badge"><i class="fa-solid fa-circle-check"></i> Correct! 🎉</span>';
+    showToast('🎉 Brilliant! You got the right answer!', 'success');
+  } else {
+    btn.classList.add('incorrect');
+    btn.innerHTML += ' <span class="quiz-badge incorrect-badge"><i class="fa-solid fa-circle-xmark"></i> Incorrect</span>';
+    // Highlight the correct one
+    allOpts.forEach(o => {
+      if (o.getAttribute('data-correct') === 'true' && !o.classList.contains('correct')) {
+        o.classList.add('correct');
+        o.innerHTML += ' <span class="quiz-badge correct-badge">Correct Answer ✓</span>';
+      }
+    });
+    showToast('Not quite right — check the correct answer highlighted!', 'error');
+  }
+
+  // Prevent multiple clicks on same group
+  allOpts.forEach(o => o.style.pointerEvents = 'none');
+}
+
+// Interactive Speech Synthesis (Tyla Reads Aloud)
+let currentSpeechUtterance = null;
+function toggleTylaSpeech(btn) {
+  if (!('speechSynthesis' in window)) {
+    showToast('Speech synthesis not supported in this browser.', 'error');
+    return;
+  }
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen to Tyla';
+    btn.classList.remove('active-speech');
+    return;
+  }
+
+  const bubble = btn.closest('.msg-bubble');
+  if (!bubble) return;
+
+  // Extract clean speech text
+  const clone = bubble.cloneNode(true);
+  clone.querySelectorAll('.msg-interactive-toolbar, pre, code').forEach(el => el.remove());
+  const text = clone.innerText.replace(/[#*`_>]/g, '').trim();
+
+  currentSpeechUtterance = new SpeechSynthesisUtterance(text);
+  currentSpeechUtterance.rate = 1.0;
+  currentSpeechUtterance.pitch = 1.05;
+
+  // Choose a clear voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Karen')));
+  if (preferredVoice) currentSpeechUtterance.voice = preferredVoice;
+
+  btn.innerHTML = '<i class="fa-solid fa-circle-stop fa-beat"></i> Stop Listening';
+  btn.classList.add('active-speech');
+
+  currentSpeechUtterance.onend = () => {
+    btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen to Tyla';
+    btn.classList.remove('active-speech');
+  };
+  currentSpeechUtterance.onerror = () => {
+    btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen to Tyla';
+    btn.classList.remove('active-speech');
+  };
+
+  window.speechSynthesis.speak(currentSpeechUtterance);
+}
+
 function copyAIText(btn) {
   const bubble = btn.closest('.msg-bubble');
   if (bubble) {
-    const textToCopy = bubble.innerText.replace('Copy Solution', '').trim();
+    const clone = bubble.cloneNode(true);
+    clone.querySelectorAll('.msg-interactive-toolbar').forEach(el => el.remove());
+    const textToCopy = clone.innerText.trim();
     navigator.clipboard.writeText(textToCopy);
     btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
     setTimeout(() => {
       btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Solution';
     }, 2000);
-    showToast('Solution copied to clipboard!', 'success');
+    showToast('Tyla solution copied to clipboard!', 'success');
   }
 }
