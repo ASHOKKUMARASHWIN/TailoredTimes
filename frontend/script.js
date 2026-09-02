@@ -2463,11 +2463,14 @@ function debounce(func, wait) {
    ========================================================================== */
 const aiState = {
   isOpen: false,
+  isFullscreen: false,
   mode: 'doubt',
   quizScore: 0,
   currentArticleContext: '',
   articleTitle: '',
   isProcessing: false,
+  isRecording: false,
+  history: [], // Multi-turn conversational memory (like ChatGPT/Gemini/Claude)
   messages: []
 };
 
@@ -2486,22 +2489,81 @@ function toggleAIChat() {
   }
 }
 
-function setTylaMode(mode, btn) {
-  aiState.mode = mode;
-  document.querySelectorAll('.ai-mode-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+function toggleFullscreenAIChat() {
+  const drawer = document.getElementById('ai-chat-drawer');
+  const btn = document.getElementById('btn-fullscreen-tyla');
+  if (!drawer) return;
 
+  aiState.isFullscreen = !aiState.isFullscreen;
+  drawer.classList.toggle('fullscreen', aiState.isFullscreen);
+
+  if (btn) {
+    btn.innerHTML = aiState.isFullscreen 
+      ? '<i class="fa-solid fa-compress"></i>' 
+      : '<i class="fa-solid fa-expand"></i>';
+    btn.title = aiState.isFullscreen ? 'Exit Full Screen' : 'Full Screen Canvas';
+  }
+}
+
+// Voice Input / Speech Recognition (Speak to Tyla)
+let speechRecognitionInstance = null;
+function toggleVoiceInput() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    showToast('Voice input is not supported in this browser. Try Chrome/Edge!', 'error');
+    return;
+  }
+
+  const micBtn = document.getElementById('ai-mic-btn');
   const input = document.getElementById('ai-user-input');
-  if (!input) return;
 
-  const placeholders = {
-    doubt: "Type your academic question or doubt here... (e.g. 'Explain Ind AS 116' or 'How does DNA replication work?')",
-    quiz: "Enter any topic to generate an interactive quiz... (e.g. 'Calculus Integrals', 'Photosynthesis', or 'IELTS Writing')",
-    mnemonic: "Enter a concept to get a memory hook or acronym... (e.g. 'Cranial Nerves', 'Tax Deductions', or 'Periodic Table')",
-    formulas: "Enter a topic for formula cheat sheet... (e.g. 'Rotational Mechanics', 'WACC Valuation', or 'Optics')"
-  };
-  input.placeholder = placeholders[mode] || placeholders.doubt;
-  input.focus();
+  if (aiState.isRecording) {
+    if (speechRecognitionInstance) speechRecognitionInstance.stop();
+    aiState.isRecording = false;
+    if (micBtn) micBtn.classList.remove('recording');
+    return;
+  }
+
+  try {
+    speechRecognitionInstance = new SpeechRec();
+    speechRecognitionInstance.continuous = false;
+    speechRecognitionInstance.interimResults = true;
+    speechRecognitionInstance.lang = 'en-US';
+
+    speechRecognitionInstance.onstart = () => {
+      aiState.isRecording = true;
+      if (micBtn) micBtn.classList.add('recording');
+      showToast('🎙️ Listening... Speak your doubt to Tyla', 'info');
+    };
+
+    speechRecognitionInstance.onresult = (event) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      if (input) input.value = transcript;
+    };
+
+    speechRecognitionInstance.onend = () => {
+      aiState.isRecording = false;
+      if (micBtn) micBtn.classList.remove('recording');
+      if (input && input.value.trim()) {
+        setTimeout(() => submitAIDoubt(), 300);
+      }
+    };
+
+    speechRecognitionInstance.onerror = (err) => {
+      aiState.isRecording = false;
+      if (micBtn) micBtn.classList.remove('recording');
+      showToast('Microphone error: ' + (err.error || 'Check mic permissions'), 'error');
+    };
+
+    speechRecognitionInstance.start();
+  } catch (e) {
+    aiState.isRecording = false;
+    if (micBtn) micBtn.classList.remove('recording');
+    showToast('Could not start microphone.', 'error');
+  }
 }
 
 function openAIDoubtForArticle(articleId, title, coreConcept, section) {
@@ -2540,13 +2602,14 @@ function clearAIChat() {
       <div class="ai-message ai-msg-bot">
         <div class="msg-bubble">
           <p>🧹 <strong>Chat Cleared.</strong></p>
-          <p>Hi! I'm <strong>Tyla</strong>. Ask me any doubt or test yourself on any topic!</p>
+          <p>Hi! I'm <strong>Tyla</strong>. Ask me any question, solve a math problem, or start a new topic!</p>
         </div>
         <span class="msg-time">Tyla • Ready</span>
       </div>
     `;
   }
   aiState.messages = [];
+  aiState.history = [];
   clearAIContext();
 }
 
@@ -2578,7 +2641,7 @@ async function submitAIDoubt() {
   aiState.isProcessing = true;
   if (sendBtn) sendBtn.disabled = true;
 
-  // Append user message
+  // Append user message to UI
   const userMsgEl = document.createElement('div');
   userMsgEl.className = 'ai-message ai-msg-user';
   userMsgEl.innerHTML = `
@@ -2596,7 +2659,7 @@ async function submitAIDoubt() {
   loadingEl.innerHTML = `
     <div class="msg-bubble" style="display: flex; align-items: center; gap: 8px;">
       <i class="fa-solid fa-spinner fa-spin" style="color: var(--accent);"></i>
-      <span style="font-size: 13px; color: var(--text-muted);">Tyla is formulating step-by-step solution...</span>
+      <span style="font-size: 13px; color: var(--text-muted);">Tyla is formulating answer...</span>
     </div>
   `;
   container.appendChild(loadingEl);
@@ -2606,7 +2669,8 @@ async function submitAIDoubt() {
     const payload = {
       question,
       mode: aiState.mode,
-      context: aiState.currentArticleContext
+      context: aiState.currentArticleContext,
+      history: aiState.history.slice(-8) // Send recent conversational context
     };
 
     const res = await fetch('/api/ai/ask', {
@@ -2620,6 +2684,10 @@ async function submitAIDoubt() {
 
     const answer = data.answer || 'I am ready to help you. Could you rephrase your question?';
     
+    // Save to multi-turn conversation memory
+    aiState.history.push({ role: 'user', content: question });
+    aiState.history.push({ role: 'assistant', content: answer });
+
     // Format response HTML with interactive elements
     const formattedAnswer = renderMarkdownToHTML(answer);
 
