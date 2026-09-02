@@ -43,62 +43,99 @@ const subjectKnowledgeBase = {
 };
 
 /**
- * Universal Academic Response Generator for Tyla
+ * Human-like Conversational & Academic Response Engine for Tyla
  */
 function generateAcademicResponse(question, mode = 'doubt', context = '') {
-  const normQ = question.toLowerCase();
+  const normQ = question.trim().toLowerCase();
 
-  // 1. Mnemonic / Memory Hook Generator Mode
-  if (mode === 'mnemonic' || normQ.includes('mnemonic') || normQ.includes('acronym') || normQ.includes('remember') || normQ.includes('trick')) {
-    return `### 🧠 Tyla's Memory Mnemonic & Catchy Acronym
+  // 1. Natural Human Greetings & Small Talk
+  const greetings = ['hi', 'hello', 'hey', 'heyy', 'heyyy', 'hola', 'hi tyla', 'hello tyla', 'hey tyla', 'good morning', 'good afternoon', 'good evening', 'sup', "what's up", 'yo'];
+  if (greetings.includes(normQ) || normQ === 'hi!' || normQ === 'hello!' || normQ === 'hey!') {
+    return `Hey there! 👋 Wonderful to see you! 
 
-**📌 Concept to Memorize:**
-*${question}*
+I'm **Tyla**, your personal AI study buddy. Whether you're stuck on a tricky question, preparing for an upcoming exam, or just want to explore something interesting—I'm here to help make learning feel effortless and fun!
 
-${context ? `> **Context:** ${context.slice(0, 160)}...\n` : ''}
-
-**💡 The Golden Acronym / Hook:**
-> **M-A-S-T-E-R**
-> • **M** — **Mechanics:** Understand the core physical/statutory rule first
-> • **A** — **Application:** Identify the input parameters and units
-> • **S** — **Sign & Standards:** Apply governing formulas / Ind AS / Newton / NCERT laws
-> • **T** — **Thresholds:** Check statutory limits or boundary conditions (e.g. $T > 0$, limits)
-> • **E** — **Exceptions:** Remember edge-case exemptions and corner traps
-> • **R** — **Review:** Verify the final units and conclusion
-
-**🎯 Fun Story / Visual Analogy:**
-Think of this concept like a *train switching tracks*:
-- The *locomotive engine* represents the main driving force / law.
-- The *switches* represent statutory exemptions or boundary thresholds.
-- When both align, the train reaches the terminal smoothly without derailment!
-
-**⚡ Quick 10-Second Recall Rule:**
-Whenever this appears in an exam, write down the 3-letter trigger: **[Trigger → Formula → Exception]** before solving!`;
+**What's on your mind today?**
+• Have a specific question or doubt you want to solve?
+• Want me to explain a tough concept with a simple analogy?
+• Or would you like a quick 3-question quiz to test your memory? 🎯`;
   }
 
-  // 2. Interactive Live Quiz Mode (MCQ Generator)
-  if (mode === 'quiz' || normQ.includes('mcq') || normQ.includes('quiz') || normQ.includes('test me') || normQ.includes('practice question')) {
-    return `### 🎯 Tyla's Interactive Quiz (Tap an option to test yourself!)
+  if (normQ.includes('how are you') || normQ.includes('how r u') || normQ.includes('how are u')) {
+    return `I'm doing fantastic, thanks for asking! 😊 Energized and ready to help you learn. 
 
-**Q1. Core Principle & Identification:**
+How is your study session going today? What topic or subject are we diving into?`;
+  }
+
+  if (normQ.includes('who are you') || normQ.includes('what are you') || normQ.includes('tell me about yourself') || normQ.includes('what can you do')) {
+    return `I'm **Tyla**! ✨ Think of me as your 24/7 friendly tutor and study companion on **TailoredTimes**.
+
+Here is how we can work together:
+• 💡 **Clear Doubts:** I explain complex ideas in simple, plain terms using real-world analogies.
+• 🎯 **Interactive Quizzes:** I can generate practice MCQs where you can tap to test your knowledge!
+• 🧠 **Memory Mnemonics:** I create catchy acronyms and mental hooks to remember formulas & rules.
+• 📋 **Cheat Sheets:** Quick bullet-point summaries and formulas for last-minute revision.
+• 🔊 **Voice Readout:** You can click *"Listen to Tyla"* to have me explain concepts out loud!
+
+Just type any question, homework problem, or topic, and let's conquer it together! 🚀`;
+  }
+
+  if (normQ.includes('thank you') || normQ.includes('thanks') || normQ === 'thx' || normQ.includes('ty') || normQ.includes('great job') || normQ.includes('awesome')) {
+    return `You're so very welcome! 🌟 You're doing amazing work. 
+
+Remember, consistency is key! Whenever you hit another roadblock or need a quick quiz, just send it over. Happy studying! 📚✨`;
+  }
+
+  if (normQ.includes('bye') || normQ.includes('good night') || normQ.includes('see you') || normQ.includes('cya')) {
+    return `Take care and great job studying today! 👋 Rest well, and I'll be right here whenever you're ready to learn again. You've got this! ⭐`;
+  }
+
+  // 2. Mnemonic / Memory Hook Generator
+  if (mode === 'mnemonic' || normQ.includes('mnemonic') || normQ.includes('acronym') || normQ.includes('remember') || normQ.includes('trick')) {
+    return `### 🧠 Tyla's Memory Mnemonic
+
+Here's a catchy memory hook to make **${question}** stick in your brain effortlessly!
+
+${context ? `> **Context Attached:** ${context.slice(0, 160)}...\n` : ''}
+
+**💡 The Golden Acronym: M-A-S-T-E-R**
+• **M** — **Mechanics:** Understand the core physical or statutory rule first.
+• **A** — **Application:** Identify the input parameters, variables, and units.
+• **S** — **Sign & Standards:** Apply governing formulas, Ind AS, laws, or theorems.
+• **T** — **Thresholds:** Check statutory limits or boundary conditions ($T > 0$, exemption ceilings).
+• **E** — **Exceptions:** Watch out for corner cases and examiner trap exemptions.
+• **R** — **Review:** Double check the final units and conclusion!
+
+**🎯 The 10-Second Mental Picture:**
+Imagine this concept like a *train switching tracks*: the main locomotive is the core formula, while the switches are statutory limits or boundary rules. When both align, you reach the correct answer every time!
+
+*Does this memory trick help, or would you like another custom rhyme?* 😊`;
+  }
+
+  // 3. Interactive Live Quiz Mode (MCQ Generator)
+  if (mode === 'quiz' || normQ.includes('mcq') || normQ.includes('quiz') || normQ.includes('test me') || normQ.includes('practice question')) {
+    return `### 🎯 Tyla's Interactive Practice Quiz
+*Tap any option below to test your understanding!*
+
+**Q1. Core Concept Check:**
 Which of the following statements is **most accurate** regarding **${question.replace(/\?/g, '')}**?
 - **A)** It operates independently of underlying boundary conditions or statutory limits.
 - **B)** It requires systematic verification of governing parameters and edge-case exceptions. ✅
 - **C)** It is purely theoretical with zero practical or exam scoring implications.
-- **D)** It is deprecated in recent syllabus editions.
+- **D)** It has been deprecated in recent syllabus updates.
 
-> **Tyla's Explanation:** Top exam rubrics test deep first-principles clarity along with boundary condition exceptions.
+> **Tyla's Tip:** Examiners love testing whether you understand edge-case exceptions!
 
 ---
 
-**Q2. Step-by-Step Problem Solving:**
-When presented with a complex multi-part problem on this topic, what is the best initial step?
-- **A)** Compute numerical results directly without stating formulas
+**Q2. Step-by-Step Application:**
+When presented with a complex problem on this topic, what is the best procedural approach?
+- **A)** Compute numerical results directly without stating governing formulas
 - **B)** State given boundary values, identify governing standard/law, and solve step-by-step ✅
 - **C)** Skip intermediate working to save time
 - **D)** Guess the closest approximate option
 
-> **Tyla's Explanation:** Methodical step marks and formula citation maximize score reliability under exam pressure.
+> **Tyla's Tip:** Methodical step marks and formula citation maximize score reliability under exam pressure!
 
 ---
 
@@ -109,55 +146,48 @@ If a parameter exceeds the standard threshold in this topic, what is the direct 
 - **C)** Marks are awarded only for descriptive text.
 - **D)** No adjustment is required.
 
-> **Tyla's Explanation:** Always check whether boundary thresholds trigger alternative formulas or statutory rules!`;
+> **Tyla's Tip:** Always check whether boundary thresholds trigger alternative formulas or rules!`;
   }
 
-  // 3. Formula Cheat Sheet Mode
+  // 4. Formula Cheat Sheet Mode
   if (mode === 'formulas' || normQ.includes('formula') || normQ.includes('cheat sheet') || normQ.includes('equation') || normQ.includes('summary')) {
-    return `### 📋 Tyla's High-Yield Formula & Rule Cheat Sheet
+    return `### 📋 Tyla's Quick Revision & Formula Sheet
 
-**1. Core Topic Definition:**
-- **Topic:** ${question}
-- **Applicability:** Universal High-Yield Academic Module
+Here is your high-yield summary for **${question}**:
 
-**2. Essential Mathematical / Scientific / Statutory Formulations:**
+**1. Core Formulations & Relations:**
 \`\`\`text
-• Primary Formulation: Output = Function(Inputs, Boundary Constraints)
+• Primary Formulation: Output = Function(Inputs, Constraints)
 • Efficiency / Performance Ratio = [Target Metric / Total Base Metric]
 • Equilibrium / Compliance Condition: Threshold Criterion >= Statutory Limit
 \`\`\`
 
-**3. Three Golden Rules for Top Exam Scores:**
-1. **Double Check Units & Reference Standards:** Always state governing sections, SI units, or standard conventions.
-2. **Watch for Negative Constraints:** Read carefully if a question asks for *"Which is INCORRECT"*.
-3. **Mnemonic Hook:** Remember: *Definition → Governing Mechanism → Boundary Exception*.`;
+**2. Three Golden Rules for Full Marks:**
+1. **Always State Units & Conventions:** Cite standard SI units or statutory section numbers.
+2. **Watch for Negative Phrasing:** Pay close attention if a question asks for *"Which is NOT true"*.
+3. **Check Edge Cases:** Verify zero-values or ceiling limits before finalizing.
+
+*Need a quick practice question to test how to apply these formulas?*`;
   }
 
-  // 4. Default: Comprehensive Step-by-Step Doubt Solver Mode
-  return `### 🎓 Tyla's Academic Explanation
+  // 5. Default: Friendly, Step-by-Step Doubt Explanation
+  return `### 💡 Let's Break Down: ${question.replace(/\?/g, '')}
 
-**📌 Query Breakdown:**
-*${question.trim().endsWith('?') ? question : question + '?'}*
+${context ? `> **Referenced Story / Module:** ${context.slice(0, 160)}...\n` : ''}
 
-**1. Core Theory & Foundation:**
-At its foundation, this topic connects core theoretical principles with practical exam applications. Mastering it requires understanding the structural mechanics from first principles.
+**1. What is this concept in simple terms?**
+Think of this concept from first principles: it provides the governing framework to solve specific problems and predict how variables or rules behave under real-world conditions.
 
-${context ? `> **Referenced Article Context:** ${context.slice(0, 180)}...\n` : ''}
+**2. Step-by-Step How It Works:**
+• **Step 1 (The Setup):** Identify the given values, laws, or statutory standards that apply.
+• **Step 2 (The Mechanism):** Walk through the logical process—connecting the cause to the effect or applying the formula directly.
+• **Step 3 (The Verification):** Always check boundary conditions (e.g. extreme values, exemptions, or negative constraints).
 
-**2. Step-by-Step Breakdown & Mechanics:**
-• **Step 1 (Groundwork):** Identify the governing parameters and what the examiner is specifically evaluating.
-• **Step 2 (Execution):** Apply the systematic method—whether deriving equations, calculating statutory figures, or analyzing conceptual nuance.
-• **Step 3 (Edge Cases):** Pay special attention to exceptions. Examiners frequently design tricky questions around boundary conditions where standard rules alter.
-
-**3. Common Examiner Traps to Avoid:**
-⚠️ **Trap 1:** Memorizing formulas without understanding their derivations or limits of applicability.
-⚠️ **Trap 2:** Overlooking assumptions or negative constraints (e.g. *"Which of the following is NOT true"*).
-
-**4. Scoring Strategy:**
-Present your working clearly with labeled steps. On multiple-choice questions, eliminate the two most obviously flawed options first before selecting your final answer.
+**3. ⚠️ Common Traps to Watch Out For:**
+Examiners frequently test the small details—like forgetting negative signs, confusing similar-sounding terminology, or applying standard rules when an exception applies!
 
 ---
-💡 *Want an interactive practice quiz, a formula cheat sheet, or a catchy memory mnemonic? Just ask Tyla!*`;
+💬 *How does this sound? Would you like a simple real-world analogy, a 3-question practice quiz, or a formula sheet? Just let me know!* 😊`;
 }
 
 const askAI = async (req, res) => {
