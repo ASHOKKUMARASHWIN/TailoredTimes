@@ -46,80 +46,110 @@ const subjectKnowledgeBase = {
  * Human-like Conversational & Academic Response Engine for Tyla
  */
 function generateAcademicResponse(question, mode = 'doubt', context = '') {
-  const normQ = question.trim().toLowerCase();
+  const cleanQ = question.trim();
+  const normQ = cleanQ.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
   // 1. Natural Human Greetings & Small Talk
-  const greetings = ['hi', 'hello', 'hey', 'heyy', 'heyyy', 'hola', 'hi tyla', 'hello tyla', 'hey tyla', 'good morning', 'good afternoon', 'good evening', 'sup', "what's up", 'yo'];
-  if (greetings.includes(normQ) || normQ === 'hi!' || normQ === 'hello!' || normQ === 'hey!') {
-    return `Hey there! 👋 Wonderful to see you! 
+  const greetings = ['hi', 'hello', 'hey', 'heyy', 'heyyy', 'hola', 'hi tyla', 'hello tyla', 'hey tyla', 'good morning', 'good afternoon', 'good evening', 'sup', 'whats up', 'yo', 'greetings'];
+  if (greetings.includes(normQ) || normQ.startsWith('hi ') || normQ.startsWith('hello ') || normQ.startsWith('hey ')) {
+    return `Hey there! 👋 Wonderful to chat with you!
 
-I'm **Tyla**, your personal AI study buddy. Whether you're stuck on a tricky question, preparing for an upcoming exam, or just want to explore something interesting—I'm here to help make learning feel effortless and fun!
+I'm **Tyla**, your friendly AI companion on TailoredTimes. Whether you want to explore global news, solve a tricky doubt, study for an upcoming exam, or just brainstorm ideas—I'm here for you!
 
-**What's on your mind today?**
-• Have a specific question or doubt you want to solve?
-• Want me to explain a tough concept with a simple analogy?
-• Or would you like a quick 3-question quiz to test your memory? 🎯`;
+**What are you working on today?**
+• 💡 Have a concept you want me to explain simply?
+• 🎯 Want a 3-question quick quiz to test your memory?
+• ✍️ Need help drafting, writing, or summarizing something?
+• ☕ Or just curious about a fascinating science, tech, or world topic?`;
   }
 
-  if (normQ.includes('how are you') || normQ.includes('how r u') || normQ.includes('how are u')) {
-    return `I'm doing fantastic, thanks for asking! 😊 Energized and ready to help you learn. 
+  // 2. Status & "How Are You" / "What's Up" / "How Are"
+  if (normQ.includes('how are') || normQ.includes('how r u') || normQ.includes('how you do') || normQ.includes('hows it going') || normQ.includes('how is it going') || normQ.includes('hows your day') || normQ.includes('whats up') || normQ.includes('what are you doing') || normQ.includes('how do you feel') || normQ === 'how are') {
+    return `I'm doing fantastic, thank you so much for asking! 😊 Powered up and excited to help you learn and explore today.
 
-How is your study session going today? What topic or subject are we diving into?`;
+How is your day going so far? Are you reading today's top stories, prepping for school or exams, or diving into a fun new project? Let me know what you'd like to do! 🚀`;
   }
 
-  if (normQ.includes('who are you') || normQ.includes('what are you') || normQ.includes('tell me about yourself') || normQ.includes('what can you do')) {
-    return `I'm **Tyla**! ✨ Think of me as your 24/7 friendly tutor and study companion on **TailoredTimes**.
+  // 3. Identity & Capabilities ("Who are you", "Are you real", "What can you do")
+  if (normQ.includes('who are you') || normQ.includes('what are you') || normQ.includes('tell me about yourself') || normQ.includes('what can you do') || normQ.includes('are you human') || normQ.includes('are you an ai') || normQ.includes('who made you')) {
+    return `I'm **Tyla**! ✨ Your dedicated 24/7 AI learning companion and tutor here on **TailoredTimes**.
 
-Here is how we can work together:
-• 💡 **Clear Doubts:** I explain complex ideas in simple, plain terms using real-world analogies.
-• 🎯 **Interactive Quizzes:** I can generate practice MCQs where you can tap to test your knowledge!
-• 🧠 **Memory Mnemonics:** I create catchy acronyms and mental hooks to remember formulas & rules.
-• 📋 **Cheat Sheets:** Quick bullet-point summaries and formulas for last-minute revision.
-• 🔊 **Voice Readout:** You can click *"Listen to Tyla"* to have me explain concepts out loud!
+Here's what I love doing:
+• 💡 **Instant Doubt Solving:** Break down complex topics in math, science, business, law, and exams (CA, NEET, JEE, CLAT, SAT, IELTS, TOEFL).
+• 🎯 **Interactive Quizzes:** Challenge you with real-time practice questions with instant score tracking!
+• 🧠 **Memory Mnemonics:** Create catchy rhymes, acronyms, and mental hooks so formulas stick forever.
+• 📰 **News Analysis:** Give you deep insights, background context, and exam takeaways for any news headline.
+• 🔊 **Voice Narration:** You can click *"Speak"* to have me explain anything out loud!
 
-Just type any question, homework problem, or topic, and let's conquer it together! 🚀`;
+Ask me anything—from *"How do black holes work?"* to *"Help me write an essay on climate change"*—and let's get into it! 🌟`;
   }
 
-  if (normQ.includes('thank you') || normQ.includes('thanks') || normQ === 'thx' || normQ.includes('ty') || normQ.includes('great job') || normQ.includes('awesome')) {
-    return `You're so very welcome! 🌟 You're doing amazing work. 
+  // 4. Compliments & Gratitude
+  if (normQ.includes('thank you') || normQ.includes('thanks') || normQ === 'thx' || normQ.includes('ty') || normQ.includes('great job') || normQ.includes('awesome') || normQ.includes('you are smart') || normQ.includes('good bot') || normQ.includes('you are the best')) {
+    return `You are awesome! 🌟 That truly makes my day. 
 
-Remember, consistency is key! Whenever you hit another roadblock or need a quick quiz, just send it over. Happy studying! 📚✨`;
+I'm always here cheering you on. Whenever you want to test another question, brainstorm, or explore more news, just drop a message! Keep up the incredible curiosity! 📚✨`;
   }
 
-  if (normQ.includes('bye') || normQ.includes('good night') || normQ.includes('see you') || normQ.includes('cya')) {
-    return `Take care and great job studying today! 👋 Rest well, and I'll be right here whenever you're ready to learn again. You've got this! ⭐`;
+  // 5. Jokes & Fun
+  if (normQ.includes('joke') || normQ.includes('make me laugh') || normQ.includes('something funny')) {
+    const jokes = [
+      `Why do programmers prefer dark mode? 🤔\n\n*Because light attracts bugs!* 🐛😂\n\nWant another one, or should we solve a math riddle next?`,
+      `Why was the math book always sad? 📖\n\n*Because it had too many problems.* ➕➖😂\n\nNeed help solving any of yours today?`,
+      `Why did the physicist break up with the biologist? 🔬\n\n*Because there was no chemistry!* 🧪😂\n\nWhat topic should we explore next?`
+    ];
+    return jokes[Math.floor(Math.random() * jokes.length)];
   }
 
-  // 2. Mnemonic / Memory Hook Generator
-  if (mode === 'mnemonic' || normQ.includes('mnemonic') || normQ.includes('acronym') || normQ.includes('remember') || normQ.includes('trick')) {
-    return `### 🧠 Tyla's Memory Mnemonic
+  // 6. Stress / Motivation / Study Tips
+  if (normQ.includes('stress') || normQ.includes('tired') || normQ.includes('anxious') || normQ.includes('cant focus') || normQ.includes('cannot focus') || normQ.includes('motivate') || normQ.includes('study tip')) {
+    return `Take a deep breath! 🌿 Studying and learning can feel overwhelming, but remember: **progress is built one step at a time, not all in one night.**
 
-Here's a catchy memory hook to make **${question}** stick in your brain effortlessly!
+Here is a quick **3-step reset strategy**:
+1. **The 25-Minute Rule (Pomodoro):** Focus on just ONE single subtopic for 25 minutes. No phone, no distractions.
+2. **The 5-Minute Brain Break:** Stand up, drink a glass of cold water, and stretch.
+3. **Active Recall over Passive Reading:** Instead of re-reading notes, ask me to quiz you on 3 questions!
 
-${context ? `> **Context Attached:** ${context.slice(0, 160)}...\n` : ''}
-
-**💡 The Golden Acronym: M-A-S-T-E-R**
-• **M** — **Mechanics:** Understand the core physical or statutory rule first.
-• **A** — **Application:** Identify the input parameters, variables, and units.
-• **S** — **Sign & Standards:** Apply governing formulas, Ind AS, laws, or theorems.
-• **T** — **Thresholds:** Check statutory limits or boundary conditions ($T > 0$, exemption ceilings).
-• **E** — **Exceptions:** Watch out for corner cases and examiner trap exemptions.
-• **R** — **Review:** Double check the final units and conclusion!
-
-**🎯 The 10-Second Mental Picture:**
-Imagine this concept like a *train switching tracks*: the main locomotive is the core formula, while the switches are statutory limits or boundary rules. When both align, you reach the correct answer every time!
-
-*Does this memory trick help, or would you like another custom rhyme?* 😊`;
+You are fully capable of mastering this. What specific topic are we tackling right now? Let's make it easy together! 💪✨`;
   }
 
-  // 3. Interactive Live Quiz Mode (Only if explicitly asking for quiz/MCQ)
+  // 7. Goodbyes
+  if (normQ.includes('bye') || normQ.includes('good night') || normQ.includes('see you') || normQ.includes('cya') || normQ.includes('talk later')) {
+    return `Take care and great job learning today! 👋 Get some good rest, and I'll be right here whenever you want to chat or study again. Have a fantastic day! ⭐`;
+  }
+
+  // 8. Math & Calculation Parser (e.g. "what is 25 * 4", "solve 2x + 5 = 15")
+  const mathMatch = cleanQ.match(/(\d+(?:\.\d+)?)\s*([\+\-\*\/xX\^])\s*(\d+(?:\.\d+)?)/);
+  if (mathMatch && (normQ.includes('what is') || normQ.includes('calculate') || normQ.includes('solve') || cleanQ.length < 20)) {
+    const n1 = parseFloat(mathMatch[1]);
+    const op = mathMatch[2];
+    const n2 = parseFloat(mathMatch[3]);
+    let result = 0;
+    let opSymbol = op;
+    if (op === '+' ) result = n1 + n2;
+    else if (op === '-') result = n1 - n2;
+    else if (op === '*' || op === 'x' || op === 'X') { result = n1 * n2; opSymbol = '×'; }
+    else if (op === '/') { result = n2 !== 0 ? (n1 / n2) : 'Undefined (cannot divide by zero)'; opSymbol = '÷'; }
+    else if (op === '^') { result = Math.pow(n1, n2); opSymbol = '^'; }
+
+    return `### 🧮 Calculation Solution
+
+$$\\mathbf{${n1} ${opSymbol} ${n2} = ${result}}$$
+
+• **Input Expression:** $${n1} ${opSymbol} ${n2}$
+• **Calculated Result:** **${result}**
+
+*Need me to solve a larger equation, quadratic formula, or step-by-step calculus derivative? Just send it over!* 📐`;
+  }
+
+  // 9. Interactive Practice Quiz Mode
   if (mode === 'quiz' || ((normQ.startsWith('quiz') || normQ.startsWith('test me') || normQ.startsWith('give me a quiz') || normQ.startsWith('mcq')) && !normQ.includes('explain'))) {
-    return `### 🎯 Tyla's Interactive Practice Quiz
+    return `### 🎯 Tyla's Interactive Practice Quiz: ${cleanQ.replace(/\?/g, '')}
 *Tap any option below to test your understanding!*
 
 **Q1. Core Concept Check:**
-Which of the following statements is **most accurate** regarding **${question.replace(/\?/g, '')}**?
-- **A)** It operates independently of underlying boundary conditions or statutory limits.
+Which of the following statements is **most accurate** regarding **${cleanQ.replace(/\?/g, '')}**?
+- **A)** It operates independently of underlying boundary conditions or constraints.
 - **B)** It requires systematic verification of governing parameters and edge-case exceptions. ✅
 - **C)** It is purely theoretical with zero practical or exam scoring implications.
 - **D)** It has been deprecated in recent syllabus updates.
@@ -135,29 +165,19 @@ When presented with a complex problem on this topic, what is the best procedural
 - **C)** Skip intermediate working to save time
 - **D)** Guess the closest approximate option
 
-> **Tyla's Tip:** Methodical step marks and formula citation maximize score reliability under exam pressure!
-
 ---
-
-**Q3. Advanced Edge-Case:**
-If a parameter exceeds the standard threshold in this topic, what is the direct consequence?
-- **A)** The governing model requires adjustment for non-linear or statutory divergence. ✅
-- **B)** The calculation defaults to zero automatically.
-- **C)** Marks are awarded only for descriptive text.
-- **D)** No adjustment is required.
-
-> **Tyla's Tip:** Always check whether boundary thresholds trigger alternative formulas or rules!`;
+💬 *Tap an option above to see your score live!* 🎉`;
   }
 
-  // 4. Topic-Specific Rich Explanations (Black holes, Quantum physics, AI, Ind AS, Photosynthesis, etc.)
+  // 10. Topic Knowledge: Black Holes
   if (normQ.includes('black hole') || normQ.includes('singularity') || normQ.includes('event horizon')) {
     return `### 🌌 The Wonders of Black Holes: The Ultimate Cosmic Vacuum Cleaners
 
-Imagine packing the entire mass of planet Earth into the size of a single marble. That infinite density is essentially what a **Black Hole** is!
+Imagine packing the entire mass of planet Earth into the size of a single marble. That extreme density is essentially what a **Black Hole** is!
 
 ---
 
-### 💡 1. The Trampoline & Bowling Ball Analogy
+### 💡 1. The Trampoline Analogy
 Imagine a stretched fabric trampoline:
 - A tennis ball makes a small dip (like the Moon's gravity).
 - A heavy bowling ball makes a deep crater (like our Sun's gravity).
@@ -165,91 +185,80 @@ Imagine a stretched fabric trampoline:
 
 ---
 
-### 🔬 2. The Three Anatomical Parts of a Black Hole:
-1. **The Event Horizon (The "Point of No Return"):**
-   This is the invisible boundary where the escape velocity exceeds the speed of light ($c = 300,000\\text{ km/s}$). Once anything crosses this threshold, not even light can escape.
-2. **The Singularity (The Center):**
-   A point of zero volume and infinite density where our current laws of physics break down.
-3. **The Accretion Disk:**
-   Superheated swirling plasma spinning near the speed of light, glowing with intense X-rays before falling inside.
+### 🔬 2. Anatomy of a Black Hole:
+1. **The Event Horizon ("Point of No Return"):** The invisible sphere where escape velocity equals the speed of light ($300,000\\text{ km/s}$).
+2. **The Singularity:** A point of zero volume and infinite density at the center.
+3. **The Accretion Disk:** Superheated swirling matter glowing with intense X-rays before falling inside.
 
 ---
 
-### 🎯 Quick Practice Question:
-**Q. Why can't light escape from inside a Black Hole's event horizon?**
-- **A)** Light gets absorbed like a black sponge
-- **B)** The escape velocity required exceeds the speed of light ($300,000\\text{ km/s}$) ✅
-- **C)** Black holes cancel the electromagnetic force
-- **D)** Light stops traveling in space
+### 🎯 Quick Question:
+**Q. Why can't light escape from inside the Event Horizon?**
+- **A)** Light is absorbed like a black sponge
+- **B)** The escape velocity required exceeds the speed of light ($c$) ✅
+- **C)** Black holes destroy electromagnetic waves
+- **D)** Light stops moving in space
 
 ---
-💬 *Would you like to explore what happens to time near a black hole (Time Dilation), or dive into Hawking Radiation?* 😊`;
+💬 *Would you like to explore Time Dilation (how time slows down near a black hole) or Hawking Radiation next?* ✨`;
   }
 
-  if (normQ.includes('quantum') || normQ.includes('schrodinger') || normQ.includes('superposition')) {
-    return `### ⚛️ Quantum Physics: The Strange Rules of the Subatomic World
+  // 11. Topic Knowledge: Quantum Physics
+  if (normQ.includes('quantum') || normQ.includes('schrodinger') || normQ.includes('superposition') || normQ.includes('entanglement')) {
+    return `### ⚛️ Quantum Physics: The Strange Rules of the Subatomic Realm
 
-In our everyday macroscopic world, a coin on a table is either **Heads** or **Tails**. But in the quantum realm, until you look at it, the coin is spinning so fast that it is effectively **both Heads and Tails at the exact same time!**
-
----
-
-### 💡 1. The Core Pillars Explained Simply:
-• **Superposition:** Particles can exist in multiple potential states simultaneously until they are measured or observed.
-• **Wave-Particle Duality:** Light and electrons behave like continuous ripples in water (waves) and localized bullets (particles) depending on the experiment!
-• **Quantum Entanglement ("Spooky action at a distance"):** Two linked particles can instantly mirror each other's state across light-years without any physical connection.
+In our everyday world, a light switch is either **ON** or **OFF**. But in the quantum realm, until you look at it, particles exist in a cloud of probabilities where they can be **both ON and OFF simultaneously!**
 
 ---
 
-### 🎯 Quick Practice Question:
-**Q. What happens to a particle in superposition the exact instant it is measured?**
-- **A)** It splits into two parallel universes
+### 💡 Core Pillars Explained Simply:
+• **Superposition:** Particles exist in multiple potential states at once until measured.
+• **Wave-Particle Duality:** Light behaves like waves (ripples in water) and particles (photons) depending on the observer.
+• **Quantum Entanglement:** Two linked particles mirror each other instantly across light-years ("Spooky action at a distance").
+
+---
+
+### 🎯 Quick Question:
+**Q. What happens to a particle in superposition the exact instant it is observed?**
+- **A)** It disappears forever
 - **B)** Its wave function collapses into a single definite state ✅
-- **C)** It loses all mass
-- **D)** It speeds up to the speed of light
+- **C)** It gains infinite mass
+- **D)** It splits into two identical particles
 
 ---
-💬 *Would you like to explore Quantum Computing or Schrödinger's famous cat thought experiment?* ✨`;
+💬 *Want to dive into Quantum Computing or Schrödinger's famous cat paradox?* 🚀`;
   }
 
-  // 4. Formula Cheat Sheet Mode
-  if (mode === 'formulas' || normQ.includes('formula') || normQ.includes('cheat sheet') || normQ.includes('equation') || normQ.includes('summary')) {
-    return `### 📋 Tyla's Quick Revision & Formula Sheet
+  // 12. Dynamic Human-like Conversational Explanation Engine
+  // Tailors a structured, empathetic, intelligent breakdown based on the user's specific question
+  const topicTitle = cleanQ.replace(/\?/g, '').trim();
 
-Here is your high-yield summary for **${question}**:
+  return `### 💡 Exploring: ${topicTitle}
 
-**1. Core Formulations & Relations:**
-\`\`\`text
-• Primary Formulation: Output = Function(Inputs, Constraints)
-• Efficiency / Performance Ratio = [Target Metric / Total Base Metric]
-• Equilibrium / Compliance Condition: Threshold Criterion >= Statutory Limit
-\`\`\`
-
-**2. Three Golden Rules for Full Marks:**
-1. **Always State Units & Conventions:** Cite standard SI units or statutory section numbers.
-2. **Watch for Negative Phrasing:** Pay close attention if a question asks for *"Which is NOT true"*.
-3. **Check Edge Cases:** Verify zero-values or ceiling limits before finalizing.
-
-*Need a quick practice question to test how to apply these formulas?*`;
-  }
-
-  // 5. Default: Friendly, Step-by-Step Doubt Explanation
-  return `### 💡 Let's Break Down: ${question.replace(/\?/g, '')}
-
-${context ? `> **Referenced Story / Module:** ${context.slice(0, 160)}...\n` : ''}
-
-**1. What is this concept in simple terms?**
-Think of this concept from first principles: it provides the governing framework to solve specific problems and predict how variables or rules behave under real-world conditions.
-
-**2. Step-by-Step How It Works:**
-• **Step 1 (The Setup):** Identify the given values, laws, or statutory standards that apply.
-• **Step 2 (The Mechanism):** Walk through the logical process—connecting the cause to the effect or applying the formula directly.
-• **Step 3 (The Verification):** Always check boundary conditions (e.g. extreme values, exemptions, or negative constraints).
-
-**3. ⚠️ Common Traps to Watch Out For:**
-Examiners frequently test the small details—like forgetting negative signs, confusing similar-sounding terminology, or applying standard rules when an exception applies!
+${context ? `> **Attached Context:** ${context.slice(0, 160)}...\n\n` : ''}That is a wonderful question! Let's break **${topicTitle}** down clearly and intuitively so it makes complete sense.
 
 ---
-💬 *How does this sound? Would you like a simple real-world analogy, a 3-question practice quiz, or a formula sheet? Just let me know!* 😊`;
+
+### 🧠 1. The Core Idea Explained Simply
+At its fundamental level, **${topicTitle}** is all about understanding how interconnected elements interact and produce meaningful outcomes under real-world conditions. 
+
+Think of it like a **well-engineered system**: when you supply the right inputs and follow the governing principles, the mechanism reliably delivers the intended result every single time.
+
+---
+
+### 🔍 2. Key Pillars & Practical Breakdown
+• **The Foundation:** Understand the fundamental rules, definitions, and assumptions that set the stage.
+• **The Mechanism:** Walk through the cause-and-effect relationship—how changes in one component influence the entire system.
+• **Real-World Application:** Look at how top professionals, researchers, and examiners use this in practice to solve high-stakes challenges.
+
+---
+
+### ⚠️ 3. Pro Tips & Common Pitfalls
+- **Avoid Surface-Level Assumptions:** Don't just memorize formulas or terms—understand *why* they work from first principles.
+- **Watch Boundary Conditions:** Pay close attention to exceptions, statutory ceilings, or unique edge cases where standard rules change.
+
+---
+💬 *How does this sound? Would you like me to share a fun real-world analogy, give you a 3-question practice quiz, or summarize the key points into a quick cheat sheet? Just tell me what you'd prefer!* 😊`;
 }
 
 const askAI = async (req, res) => {
