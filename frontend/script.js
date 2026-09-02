@@ -153,8 +153,6 @@ const PROFESSIONS = [
 const FORMATS = [
   { id: '1min', title: '1-minute reads (Quick Takeaways)', emoji: '⚡', desc: '3 fast key takeaway bullets per story' },
   { id: 'summaries', title: 'Executive Summaries', emoji: '📝', desc: 'Key points, data figures & highlights' },
-  { id: 'neet', title: 'NEET Medical Entrance Prep', emoji: '🩺', desc: 'Biology & Medical GK, Physiology, Formulas & MCQs' },
-  { id: 'jee', title: 'JEE Engineering Entrance Prep', emoji: '⚛️', desc: 'Physics, Chemistry, Calculus & Numerical MCQs' },
   { id: 'sat', title: 'Digital SAT Prep', emoji: '📐', desc: 'Reading & Writing, Grammar, Math & Practice MCQs' },
   { id: 'clat', title: 'CLAT Legal & Current Affairs', emoji: '⚖️', desc: 'Legal GK, landmark rulings, acts & practice MCQs' },
   { id: 'ca', title: 'CA Financial & Policy Prep', emoji: '📊', desc: 'Fiscal policy, taxation, RBI/SEBI & audit notes' },
@@ -979,8 +977,6 @@ function renderFeedFormatPills() {
   const displayFormats = [
     { id: '1min', title: '1-Min Reads', emoji: '⚡' },
     { id: 'summaries', title: 'Summaries', emoji: '📝' },
-    { id: 'neet', title: 'NEET Prep', emoji: '🩺' },
-    { id: 'jee', title: 'JEE Prep', emoji: '⚛️' },
     { id: 'sat', title: 'SAT Prep', emoji: '📐' },
     { id: 'clat', title: 'CLAT Prep', emoji: '⚖️' },
     { id: 'ca', title: 'CA Prep', emoji: '📊' },
