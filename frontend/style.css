@@ -1623,42 +1623,209 @@ input { font-family: var(--font); outline: none; }
   color: #fff;
 }
 
-/* Dynamic Follow-up Pills */
-.msg-follow-ups {
-  margin-top: 8px;
+/* ChatGPT & Gemini Style Welcome Hero Dashboard */
+.ai-welcome-hero {
+  padding: 24px 16px;
+  text-align: center;
+  max-width: 680px;
+  margin: auto;
+  animation: fadeInHero 0.4s ease;
+}
+@keyframes fadeInHero {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ai-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.12), rgba(121, 40, 202, 0.12));
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  border: 1px solid rgba(0, 102, 255, 0.2);
+}
+.ai-hero-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.ai-hero-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.ai-hero-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  text-align: left;
+}
+@media (max-width: 580px) {
+  .ai-hero-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.ai-hero-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
-.follow-up-label {
+.ai-hero-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 102, 255, 0.12);
+}
+.hero-card-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.hero-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.hero-card-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Thinking Indicator Animation */
+.ai-thinking-bubble {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px !important;
+}
+.ai-thinking-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.ai-thinking-dots span {
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: bounceDot 1.4s infinite ease-in-out both;
+}
+.ai-thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
+.ai-thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounceDot {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+.ai-thinking-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Typewriter Live Streaming Cursor */
+.typing-cursor {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 900;
+  margin-left: 2px;
+  animation: blinkCursor 0.7s infinite alternate;
+}
+@keyframes blinkCursor {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ChatGPT Style Code Blocks */
+.ai-code-wrapper {
+  margin: 12px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #1e1e2e;
+}
+.ai-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #181825;
+  padding: 6px 12px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  color: #cdd6f4;
+  border-bottom: 1px solid #313244;
 }
-.follow-up-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.ai-code-lang {
+  letter-spacing: 0.5px;
+  color: #89b4fa;
 }
-.follow-up-pill {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  padding: 4px 10px;
+.ai-code-copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cdd6f4;
+  border-radius: 6px;
+  padding: 3px 8px;
   font-size: 11px;
-  font-weight: 600;
-  color: var(--accent);
   cursor: pointer;
-  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
 }
-.follow-up-pill:hover {
-  background: var(--accent);
-  color: #fff;
-  border-style: solid;
-  border-color: var(--accent);
-  transform: translateY(-1px);
+.ai-code-copy-btn:hover {
+  background: #89b4fa;
+  color: #11111b;
+}
+.ai-code-pre {
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cdd6f4;
+}
+
+/* Headers & Lists */
+.ai-header-2 {
+  color: var(--accent);
+  margin: 12px 0 6px 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+.ai-header-3 {
+  color: var(--text);
+  margin: 10px 0 4px 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+.ai-bullet-li {
+  margin: 4px 0 4px 18px;
+  line-height: 1.5;
+}
+.ai-blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 6px 12px;
+  margin: 8px 0;
+  background: rgba(0, 102, 255, 0.05);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+/* Reaction Buttons */
+.reaction-btn {
+  padding: 4px 7px !important;
 }
 
 /* Ask Tyla Button on Article Cards */
