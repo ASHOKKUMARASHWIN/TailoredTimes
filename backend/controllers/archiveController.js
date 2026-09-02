@@ -43,10 +43,17 @@ const archiveSectionsConfig = {
 
 const getArchiveSections = (req, res) => res.json(archiveSectionsConfig);
 
-function getAvailableYears() {
-  const years = [];
-  for (let y = 2026; y >= 2017; y--) years.push(y);
-  return years;
+// Distribute articles across years 2017–2026 by index position
+// so each year deterministically shows a unique subset of articles
+const ALL_YEARS = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017];
+
+function assignYears(pool) {
+  const total = pool.length;
+  const perYear = Math.max(1, Math.ceil(total / ALL_YEARS.length));
+  return pool.map((article, idx) => {
+    const assignedYear = ALL_YEARS[Math.floor(idx / perYear)] || ALL_YEARS[ALL_YEARS.length - 1];
+    return { ...article, year: assignedYear };
+  });
 }
 
 const getArchiveArticles = async (req, res) => {
@@ -77,7 +84,15 @@ const getArchiveArticles = async (req, res) => {
       curatedPool = generalStudentArticles;
     }
 
-    let filtered = [...curatedPool];
+    // Assign a deterministic year to each article based on its index
+    const annotatedPool = assignYears(curatedPool);
+    let filtered = [...annotatedPool];
+
+    // Year filtering — only apply if a specific year is selected
+    if (year && parseInt(year)) {
+      const yearNum = parseInt(year);
+      filtered = filtered.filter(a => a.year === yearNum);
+    }
 
     // Topic filtering
     if (topic && topic.trim() && topic.toLowerCase() !== 'all-topics' && topic.toLowerCase() !== 'all topics') {
@@ -124,7 +139,8 @@ const getArchiveArticles = async (req, res) => {
             syllabus: 'Academic English & Comprehension Standards',
             url: la.url,
             isTextbookArticle: false,
-            publishedAt: la.publishedAt || new Date()
+            publishedAt: la.publishedAt || new Date(),
+            year: 2026
           });
         });
       } catch (err) {}
@@ -140,12 +156,12 @@ const getArchiveArticles = async (req, res) => {
         section,
         url: a.url || `javascript:openCaArticleModal('${a.id}')`,
         isTextbookArticle: a.content && a.content.length > 200,
-        publishedAt: a.publishedAt || new Date('2026-01-01T00:00:00Z')
+        publishedAt: a.publishedAt || new Date(`${a.year || 2026}-01-01T00:00:00Z`)
       })),
       total,
       page: pageNum,
       totalPages: Math.ceil(total / limitNum) || 1,
-      availableYears: getAvailableYears(),
+      availableYears: ALL_YEARS,
       source: 'curated-study-archive'
     });
 
@@ -157,7 +173,7 @@ const getArchiveArticles = async (req, res) => {
 
 const getYearStats = (req, res) => {
   res.json({
-    years: getAvailableYears(),
+    years: ALL_YEARS,
     totalArticles: 150
   });
 };
