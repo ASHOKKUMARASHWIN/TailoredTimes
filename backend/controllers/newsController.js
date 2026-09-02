@@ -149,6 +149,7 @@ const getFeed = async (req, res) => {
 
     // Scrape real og:image for articles missing images
     paginatedArticles = await imageScraper.enrichArticlesWithImages(paginatedArticles);
+    paginatedArticles = rssFetcher.assignUniqueArticleImages(paginatedArticles);
 
     res.json({
       articles: paginatedArticles,
@@ -265,6 +266,7 @@ const getMyCountriesFeed = async (req, res) => {
     const skip = (page - 1) * limit;
     let pageArticles = finalArticles.slice(skip, skip + limit);
     pageArticles = await imageScraper.enrichArticlesWithImages(pageArticles);
+    pageArticles = rssFetcher.assignUniqueArticleImages(pageArticles);
 
     res.json({
       articles: pageArticles,
@@ -318,6 +320,7 @@ const getWorldNews = async (req, res) => {
 
     let result = validArticles.slice(0, 35);
     result = await imageScraper.enrichArticlesWithImages(result);
+    result = rssFetcher.assignUniqueArticleImages(result);
     res.json({ articles: result });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -411,6 +414,7 @@ const getCategoryFeed = async (req, res) => {
     const skip = (page - 1) * limit;
     let pageArticles = outputArticles.slice(skip, skip + limit);
     pageArticles = await imageScraper.enrichArticlesWithImages(pageArticles);
+    pageArticles = rssFetcher.assignUniqueArticleImages(pageArticles);
 
     res.json({
       articles: pageArticles,
@@ -438,6 +442,8 @@ const searchArticles = async (req, res) => {
       (!country || a.country === country) &&
       (!category || a.category === category)
     );
+
+    articles = rssFetcher.assignUniqueArticleImages(articles);
 
     res.json({ articles });
   } catch (error) {
