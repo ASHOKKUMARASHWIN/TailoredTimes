@@ -552,27 +552,24 @@
             <div class="ai-chat-title-group">
                 <div class="ai-avatar"><i class="fa-solid fa-sparkles"></i>✨</div>
                 <div>
-                    <div class="ai-chat-title">Tyla ✦ AI Study Tutor</div>
-                    <div class="ai-chat-status"><span class="status-dot"></span> Ready to clear doubts 24/7</div>
+                    <div class="ai-chat-title">Tyla ✦ Universal Study Assistant</div>
+                    <div class="ai-chat-status"><span class="status-dot"></span> Online &bull; Ask any academic doubt</div>
                 </div>
             </div>
             <div class="ai-header-actions">
+                <div class="ai-score-pill" id="tyla-score-pill" title="Interactive Quiz Points"><i class="fa-solid fa-trophy"></i> <span id="tyla-quiz-pts">0</span> pts</div>
                 <button class="ai-action-btn" onclick="clearAIChat()" title="Clear Chat"><i class="fa-regular fa-trash-can"></i></button>
                 <button class="ai-action-btn" onclick="toggleAIChat()" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </div>
 
-        <!-- Subject Quick Selector -->
-        <div class="ai-subject-bar">
-            <span class="ai-bar-label"><i class="fa-solid fa-book-open"></i> Subject:</span>
-            <div class="ai-subject-pills" id="ai-subject-pills">
-                <button class="ai-sub-pill active" data-subject="students">🎓 General</button>
-                <button class="ai-sub-pill" data-subject="ca">📚 CA</button>
-                <button class="ai-sub-pill" data-subject="neet">🩺 NEET</button>
-                <button class="ai-sub-pill" data-subject="jee">⚛️ JEE</button>
-                <button class="ai-sub-pill" data-subject="sat">📐 SAT</button>
-                <button class="ai-sub-pill" data-subject="ielts">🇬🇧 IELTS</button>
-                <button class="ai-sub-pill" data-subject="toefl">🌎 TOEFL</button>
+        <!-- Interactive Study Mode Switcher (Common for all subjects) -->
+        <div class="ai-mode-bar">
+            <div class="ai-mode-buttons">
+                <button class="ai-mode-btn active" data-mode="doubt" onclick="setTylaMode('doubt', this)"><i class="fa-regular fa-comments"></i> Doubt Solver</button>
+                <button class="ai-mode-btn" data-mode="quiz" onclick="setTylaMode('quiz', this)"><i class="fa-solid fa-bullseye"></i> Live Quiz</button>
+                <button class="ai-mode-btn" data-mode="mnemonic" onclick="setTylaMode('mnemonic', this)"><i class="fa-solid fa-brain"></i> Mnemonics</button>
+                <button class="ai-mode-btn" data-mode="formulas" onclick="setTylaMode('formulas', this)"><i class="fa-solid fa-calculator"></i> Cheat Sheet</button>
             </div>
         </div>
 
@@ -587,18 +584,20 @@
 
         <!-- Quick Action Prompt Chips -->
         <div class="ai-quick-prompts">
-            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Explain this in simple step-by-step terms with a real-world analogy.')">💡 Explain Simply</button>
-            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Give me 3 high-yield practice MCQs with detailed explanations.')">🎯 3 Practice MCQs</button>
-            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Give me the key formulas, laws, and cheat-sheet summary.')">📋 Formula Sheet</button>
-            <button class="ai-prompt-chip" onclick="sendQuickPrompt('What are the common exam traps and mistakes students make on this?')">⚠️ Exam Traps</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Explain this concept in simple step-by-step terms with a fun analogy.')">💡 Explain Simply</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Test my knowledge: Give me 3 interactive practice MCQs with explanations.')">🎯 3 Practice MCQs</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Give me the key formulas, laws, and quick memory summary for this.')">📋 Cheat Sheet</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('Create a catchy, memorable mnemonic or acronym to remember this easily.')">🧠 Make Mnemonic</button>
+            <button class="ai-prompt-chip" onclick="sendQuickPrompt('What are the top 3 examiner traps and common calculation mistakes here?')">⚠️ Common Traps</button>
         </div>
 
         <!-- Chat Messages Container -->
         <div class="ai-messages" id="ai-messages-container">
             <div class="ai-message ai-msg-bot">
                 <div class="msg-bubble">
-                    <p>👋 <strong>Hi! I'm Tyla, your AI Study Tutor.</strong></p>
-                    <p>Ask me any doubt across <strong>CA, NEET, JEE, SAT, IELTS, TOEFL</strong>, or any study topic! I can solve tricky problems, explain formulas, give revision mnemonics, and generate practice questions.</p>
+                    <p>👋 <strong>Hi! I'm Tyla, your Universal AI Study Mentor.</strong></p>
+                    <p>Ask me anything across <strong>any subject, exam, or concept</strong>—from accounting standards and genetics to advanced calculus, vocabulary, history, coding, and essay writing!</p>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 0;">💡 <em>Try asking a doubt, requesting an interactive quiz, or asking for a memory mnemonic!</em></p>
                 </div>
                 <span class="msg-time">Tyla • Ready</span>
             </div>
