@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailoredTimes — News, Tailored for You</title>
+    <link rel="icon" type="image/png" href="/assets/logo-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+
+    <!-- FLOATING PILL NAVBAR -->
+    <header class="floating-nav-wrapper">
+        <nav class="floating-nav">
+            <div class="nav-brand">
+                <img src="/assets/logo-icon.png" alt="TailoredTimes" class="nav-logo-icon">
+                <span class="nav-brand-text">TailoredTimes</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">News Feed</a>
+                <a href="#tyla" class="nav-link">Tyla AI</a>
+                <a href="#sources" class="nav-link">Sources</a>
+                <a href="#exams" class="nav-link">Exam Prep</a>
+            </div>
+            <div class="nav-actions">
+                <a href="/index.html?action=login" class="btn-nav-ghost">Sign In</a>
+                <a href="/index.html?action=signup" class="btn-nav-pill">Get Started <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <button class="nav-mobile-toggle" id="navMobileToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a href="#features" onclick="closeMobileNav()">News Feed</a>
+        <a href="#tyla" onclick="closeMobileNav()">Tyla AI</a>
+        <a href="#sources" onclick="closeMobileNav()">Sources</a>
+        <a href="#exams" onclick="closeMobileNav()">Exam Prep</a>
+        <div class="mobile-nav-divider"></div>
+        <a href="/index.html?action=login" class="mobile-nav-cta-ghost">Sign In</a>
+        <a href="/index.html?action=signup" class="mobile-nav-cta-pill">Get Started</a>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-glow hero-glow-blue"></div>
+        <div class="hero-glow hero-glow-indigo"></div>
+        <div class="hero-glow hero-glow-crimson"></div>
+        <div class="hero-grid-overlay"></div>
+
+        <div class="hero-container">
+            <!-- LEFT: Copy -->
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <span class="badge-pulse"></span>
+                    <i class="fa-solid fa-bolt"></i>
+                    Live News &bull; Powered by Tyla AI
+                </div>
+
+                <h1 class="hero-headline">
+                    News That's<br>
+                    <span class="headline-gradient">Tailored</span><br>
+                    <span class="headline-outline">For You.</span>
+                </h1>
+
+                <p class="hero-subhead">
+                    Get your world curated in real-time — from BBC to Bloomberg, NDTV to Reuters.
+                    Ask Tyla AI anything, solve doubts, prep for exams, and stay ahead.
+                </p>
+
+                <!-- AI Prompt Bar -->
+                <div class="hero-prompt-bar">
+                    <div class="prompt-ai-label">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <span>Tyla</span>
+                    </div>
+                    <input type="text" class="prompt-input" id="heroPromptInput"
+                        placeholder="Ask anything — &apos;Explain RBI rate hike&apos; or &apos;3+5*2&apos;"
+                        autocomplete="off">
+                    <button class="prompt-btn" onclick="heroAskTyla()">
+                        Ask Tyla <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <p class="prompt-hint">Try: "Summarize today budget news" &bull; "Solve x^2-5x+6=0" &bull; "IELTS writing tips"</p>
+
+                <!-- Stats Row -->
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="stat-num">60+</span>
+                        <span class="stat-label">Global Sources</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="hero-stat">
+                        <span class="stat-num">150+</span>
+                        <span class="stat-label">Knowledge Topics</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="hero-stat">
+                        <span class="stat-num">50+</span>
+                        <span class="stat-label">CA Study Articles</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Kinetic Visual -->
+            <div class="hero-right">
+                <div class="hero-visual">
+                    <div class="orbit orbit-1"></div>
+                    <div class="orbit orbit-2"></div>
+                    <div class="orbit orbit-3"></div>
+
+                    <div class="news-core">
+                        <img src="/assets/logo-icon.png" alt="TailoredTimes" class="core-logo">
+                        <div class="core-ring"></div>
+                        <div class="core-pulse"></div>
+                    </div>
+
+                    <div class="news-capsule capsule-1">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Markets +2.4%</span>
+                    </div>
+                    <div class="news-capsule capsule-2">
+                        <i class="fa-solid fa-flask"></i>
+                        <span>Science Discovery</span>
+                    </div>
+                    <div class="news-capsule capsule-3">
+                        <i class="fa-solid fa-globe"></i>
+                        <span>World News Live</span>
+                    </div>
+                    <div class="news-capsule capsule-4">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>CA Exams 2026</span>
+                    </div>
+                    <div class="news-capsule capsule-5">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Sports Update</span>
+                    </div>
+
+                    <svg class="connector-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0066ff;stop-opacity:0"/>
+                                <stop offset="50%" style="stop-color:#0066ff;stop-opacity:0.7"/>
+                                <stop offset="100%" style="stop-color:#0066ff;stop-opacity:0"/>
+                            </linearGradient>
+                            <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#7209b7;stop-opacity:0"/>
+                                <stop offset="50%" style="stop-color:#7209b7;stop-opacity:0.7"/>
+                                <stop offset="100%" style="stop-color:#7209b7;stop-opacity:0"/>
+                            </linearGradient>
+                            <linearGradient id="lg3" x1="100%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e63946;stop-opacity:0"/>
+                                <stop offset="50%" style="stop-color:#e63946;stop-opacity:0.6"/>
+                                <stop offset="100%" style="stop-color:#e63946;stop-opacity:0"/>
+                            </linearGradient>
+                        </defs>
+                        <line x1="250" y1="250" x2="390" y2="95" stroke="url(#lg1)" stroke-width="1.5" class="conn-line"/>
+                        <line x1="250" y1="250" x2="425" y2="305" stroke="url(#lg2)" stroke-width="1.5" class="conn-line"/>
+                        <line x1="250" y1="250" x2="100" y2="115" stroke="url(#lg3)" stroke-width="1.5" class="conn-line"/>
+                        <line x1="250" y1="250" x2="105" y2="375" stroke="url(#lg1)" stroke-width="1.5" class="conn-line"/>
+                        <line x1="250" y1="250" x2="325" y2="415" stroke="url(#lg2)" stroke-width="1.5" class="conn-line"/>
+                        <path d="M 150 95 Q 250 45 355 95" stroke="url(#lg1)" stroke-width="1" fill="none" opacity="0.35"/>
+                        <path d="M 95 305 Q 145 405 255 425" stroke="url(#lg3)" stroke-width="1" fill="none" opacity="0.35"/>
+                    </svg>
+
+                    <div class="particle p1"></div>
+                    <div class="particle p2"></div>
+                    <div class="particle p3"></div>
+                    <div class="particle p4"></div>
+                    <div class="particle p5"></div>
+                    <div class="particle p6"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM DOCK -->
+        <div class="hero-bottom-dock">
+            <div class="dock-testimonial">
+                <div class="testimonial-avatar">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div class="testimonial-body">
+                    <p class="testimonial-quote">"Incredible — Tyla explained Ind AS 116 better than my professor!"</p>
+                    <p class="testimonial-author">Priya Sharma &bull; CA Final Student, Mumbai</p>
+                </div>
+            </div>
+            <div class="dock-divider"></div>
+            <div class="dock-sources">
+                <span class="dock-sources-label">Trusted Sources</span>
+                <div class="source-badges">
+                    <span class="source-badge">BBC</span>
+                    <span class="source-badge">Reuters</span>
+                    <span class="source-badge">Bloomberg</span>
+                    <span class="source-badge">The Hindu</span>
+                    <span class="source-badge">Al Jazeera</span>
+                    <span class="source-badge">FT</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section" id="features">
+        <div class="section-container">
+            <div class="section-badge">
+                <i class="fa-solid fa-newspaper"></i> What TailoredTimes Offers
+            </div>
+            <h2 class="section-heading">Everything you need to <span class="text-gradient">stay informed.</span></h2>
+            <p class="section-subhead">Built for students, professionals, and curious minds — all in one place.</p>
+
+            <div class="features-grid">
+                <div class="feature-card feature-card-accent">
+                    <div class="feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h3>Tyla AI Assistant</h3>
+                    <p>Ask any question, solve doubts, get step-by-step math solutions, and personalized exam prep study plans.</p>
+                    <a href="/index.html?action=signup" class="feature-link">Try Tyla <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-rss"></i></div>
+                    <h3>Real-Time News Feed</h3>
+                    <p>60+ global sources curated for your countries, topics, profession, and reading style.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3>Exam Archive</h3>
+                    <p>High-yield CA, NEET, JEE, SAT, IELTS and TOEFL study articles with full exam breakdowns.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
+                    <h3>Multi-Country Coverage</h3>
+                    <p>Simultaneously track news from India, UK, Singapore, US, Australia, and 50+ countries.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-calculator"></i></div>
+                    <h3>Math Solver</h3>
+                    <p>Solve quadratics, percentages, BODMAS, simple interest — all step-by-step with formulas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-bookmark"></i></div>
+                    <h3>Save and Revisit</h3>
+                    <p>Bookmark articles, revisit your reading history, and build your personal knowledge library.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+        <div class="cta-glow"></div>
+        <div class="section-container cta-inner">
+            <h2>Ready to read smarter?</h2>
+            <p>Join students and professionals who use TailoredTimes to stay ahead every day.</p>
+            <div class="cta-buttons">
+                <a href="/index.html?action=signup" class="btn-cta-primary">Get Started Free <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="/index.html?action=guest" class="btn-cta-ghost">Explore as Guest</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="/assets/logo-icon.png" alt="TailoredTimes" class="footer-logo">
+                <span>TailoredTimes</span>
+            </div>
+            <p class="footer-tagline">Curating your world, headline by headline.</p>
+            <p class="footer-copy">&copy; 2026 TailoredTimes. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const navToggle = document.getElementById('navMobileToggle');
+        const mobileMenu = document.getElementById('mobileNavMenu');
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('open');
+        });
+        function closeMobileNav() {
+            navToggle.classList.remove('active');
+            mobileMenu.classList.remove('open');
+        }
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+            });
+        });
+        const navWrapper = document.querySelector('.floating-nav-wrapper');
+        window.addEventListener('scroll', () => {
+            navWrapper.classList.toggle('scrolled', window.scrollY > 40);
+        });
+        function heroAskTyla() {
+            const q = document.getElementById('heroPromptInput').value.trim();
+            if (!q) { window.location.href = '/index.html?action=signup'; return; }
+            sessionStorage.setItem('tyla_hero_query', q);
+            window.location.href = '/index.html?action=guest&ask=' + encodeURIComponent(q);
+        }
+        document.getElementById('heroPromptInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') heroAskTyla();
+        });
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.feature-card, .hero-stat, .section-heading, .section-subhead').forEach(el => {
+            el.classList.add('fade-in-up');
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
