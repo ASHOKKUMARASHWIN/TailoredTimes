@@ -43,10 +43,19 @@ app.use('/api/ai', aiRoutes);
 // Serve frontend if present
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
+
+// Root: serve landing page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'landing.html'));
+});
+
+// Catch-all: non-API routes
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ message: 'API route not found' });
-  res.sendFile(path.join(frontendPath, 'index.html'));
+  // /index.html is served statically above; for everything else fall back to landing
+  res.sendFile(path.join(frontendPath, 'landing.html'));
 });
+
 
 // Global Error Handler
 app.use((err, req, res, next) => {
