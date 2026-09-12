@@ -10,6 +10,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script>
+      // Pre-boot: handle landing page deep-link actions
+      (function() {
+        const params = new URLSearchParams(window.location.search);
+        const action = params.get('action');
+        const ask = params.get('ask');
+        if (action) {
+          sessionStorage.setItem('landing_action', action);
+        }
+        if (ask) {
+          sessionStorage.setItem('tyla_hero_query', ask);
+        }
+      })();
+    </script>
+
 </head>
 <body>
 
