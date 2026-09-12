@@ -40,19 +40,19 @@ app.use('/api/archive', archiveRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Serve frontend if present
+// Root route MUST come before express.static (static serves index.html for / by default)
 const frontendPath = path.join(__dirname, '../frontend');
-app.use(express.static(frontendPath));
 
-// Root: serve landing page
 app.get('/', (req, res) => {
   res.sendFile(path.join(frontendPath, 'landing.html'));
 });
 
-// Catch-all: non-API routes
+// Serve all other static files (css, js, assets, index.html explicitly, etc.)
+app.use(express.static(frontendPath));
+
+// Catch-all for unknown routes
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ message: 'API route not found' });
-  // /index.html is served statically above; for everything else fall back to landing
   res.sendFile(path.join(frontendPath, 'landing.html'));
 });
 
