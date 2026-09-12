@@ -417,9 +417,27 @@ async function checkAuthStatus() {
 
   if (!state.token) {
     updateSplashStatus('Welcome to TailoredTimes...');
-    finishInit(() => showAuthView());
+
+    // Handle landing page deep-link action params
+    const landingAction = sessionStorage.getItem('landing_action');
+    sessionStorage.removeItem('landing_action');
+
+    finishInit(() => {
+      if (landingAction === 'guest') {
+        handleGuestLogin();
+      } else if (landingAction === 'signup') {
+        showAuthView();
+        switchAuthTab('signup');
+      } else if (landingAction === 'login') {
+        showAuthView();
+        switchAuthTab('login');
+      } else {
+        showAuthView();
+      }
+    });
     return;
   }
+
 
   try {
     updateSplashStatus('Syncing your preferences & sources...');
@@ -752,7 +770,26 @@ function initApp() {
   handleSidebarNav('home');
   startAutoRefresh();
   updateLiveStats();
+
+  // Auto-open Tyla if user came from hero prompt bar
+  const heroQuery = sessionStorage.getItem('tyla_hero_query');
+  if (heroQuery) {
+    sessionStorage.removeItem('tyla_hero_query');
+    setTimeout(() => {
+      const aiDrawer = document.getElementById('ai-chat-drawer');
+      const aiBtn = document.getElementById('btn-ai-tutor');
+      if (aiDrawer && aiDrawer.classList.contains('hidden')) {
+        if (typeof toggleAIChat === 'function') toggleAIChat();
+      }
+      const input = document.getElementById('ai-user-input');
+      if (input) {
+        input.value = heroQuery;
+        if (typeof submitAIDoubt === 'function') submitAIDoubt();
+      }
+    }, 800);
+  }
 }
+
 
 function updateUserUI() {
   if (!state.user) return;
